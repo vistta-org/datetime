@@ -1,0 +1,21 @@
+{
+  "name": "@vistta/date-time",
+  "version": "0.1.0",
+  "description": "Vistta DateTime Class (utilities)",
+  "main": "index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://git.vistta.org/Vistta/vistta.git"
+  },
+  "scripts": {
+    "setup": "",
+    "setup:test": ""
+  },
+  "author": "Tiago Terenas Almeida",
+  "license": "CC BY-NC-ND 4.0 DEED",
+  "files": [
+    "LICENSE",
+    "tsconfig.json"
+  ]
+}
