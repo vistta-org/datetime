@@ -1,6 +1,6 @@
 {
   "name": "@vistta/date-time",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Vistta DateTime Class (utilities)",
   "main": "index.js",
   "type": "module",
