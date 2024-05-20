@@ -5,7 +5,7 @@ on:
     branches:    
       - master
 env:
-  module: console
+  module: date-time
 jobs:
   Validation:
     runs-on: ubuntu-latest
