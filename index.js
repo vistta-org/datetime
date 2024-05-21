@@ -1,18 +1,16 @@
 // @ts-check
+
 /**
- * @typedef {Object} DateTimeOptions
- * @extends Intl.RelativeTimeFormatOptions
- * @property {string} [locales] - The locale to use for formatting.
+ * @typedef {Object} LocaleOptions
+ * @property {string|string[]} [locales] - The locale to use for formatting.
  */
 
 /**
  * @typedef {Object} RelativeOptions
- * @extends Intl.RelativeTimeFormatOptions
  * @property {Date} [from] - The reference date for relative time calculations.
- * @property {string} [locales] - The locale to use for formatting.
+ * @property {string|string[]} [locales] - The locale to use for formatting.
  */
 
-// @ts-ignore
 const WEEK_IN_MILLIS = 6.048e8;
 const DAY_IN_MILLIS = 8.64e7;
 const HOUR_IN_MILLIS = 3.6e6;
@@ -67,7 +65,7 @@ export class DateTime {
    * Creates a new DateTime instance.
    * 
    * @param {Date|number|string|DateTime} [value] - The date and time value.
-   * @param {DateTimeOptions} [options] - The options for the date and time.
+   * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
    */
   constructor(value, options) {
     if (value) {
@@ -160,7 +158,7 @@ export class DateTime {
   }
 
   /**
-   * @returns {DateTimeOptions} The options for the date and time.
+   * @returns {Intl.RelativeTimeFormatOptions} The options for the date and time.
    */
   get options() {
     return this.#options;
@@ -197,7 +195,7 @@ export class DateTime {
   /**
    * Gets the formatted date and time.
    *
-   * @param {DateTimeOptions} [options] - The Intl.DateTimeFormat options object.
+   * @param {LocaleOptions & Intl.RelativeTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
    * @returns {string} The formatted date and time.
    */
   format(options) {
@@ -255,7 +253,7 @@ export class DateTime {
   /**
    * Gets the relative time from the reference date.
    *
-   * @param {RelativeOptions} options - The options for relative time calculations.
+   * @param {RelativeOptions & Intl.RelativeTimeFormatOptions} options - The options for relative time calculations.
    * @returns {string} The relative time from the reference date.
    */
   relative(options) {
@@ -293,7 +291,7 @@ export class DateTime {
  * Creates a new date and time object with default date format.
  *
  * @param {Date|number|string|DateTime} [value] - The date and time value.
- * @param {DateTimeOptions} [options] - The options for the date and time.
+ * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const date = (value, options) => new DateTime(value, options);
@@ -302,7 +300,7 @@ export const date = (value, options) => new DateTime(value, options);
  * Creates a new date and time object with default time format.
  *
  * @param {Date|number|string|DateTime} [value] - The date and time value.
- * @param {DateTimeOptions} [options] - The options for the date and time.
+ * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const time = (value, options) =>
