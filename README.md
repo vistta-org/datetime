@@ -1,30 +1,51 @@
-# **DateTime Library**
+# **Date-Time Library**
 
-A lightweight JavaScript library for working with dates and times.
+This library provides a convenient and flexible way to work with dates and times in JavaScript. It offers a `DateTime` class with various methods for formatting, comparison, and relative time calculations.
 
-## **Features**
+## **Getting Started**
 
-- Creates Date objects from strings, numbers, or existing Date objects
-- Supports formatting and parsing of dates in various formats (ISO 8601, etc.)
-- Provides methods for calculating time differences (years, months, days, hours, minutes, seconds)
-- Offers relative date formatting (e.g., "just now", "in an hour", etc.)
+### **Install**
 
-## **Usage**
-
-To use this library, simply import the `DateTime` class and create a new instance:
-
-```javascript
-import { DateTime } from "@vistta/date-time";
-const now = new DateTime();
+```sh
+npm install @vistta/date-time
 ```
 
-You can also pass in a value and options to customize the date object:
+### **Usage**
 
 ```javascript
-const date = new DateTime("2022-01-01", { locale: "en-US" });
+import { DateTime, date, time } from "@vistta/date-time";
+// Create a new DateTime object with default date format
+const date1 = new DateTime();
+
+// Create a new DateTime object with default date format
+const date2 = date();
+
+// Create a new DateTime object with custom time format
+const time1 = new DateTime(null, { hour: "numeric", minute: "numeric" });
+
+// Create a new DateTime object with default time format
+const time2 = time();
+
+// Compare two DateTime objects for equality
+if (DateTime.equals(date1, date2)) {
+  // Date and time values are equal
+}
+
+// Calculate the difference between two dates in days
+const daysDifference = date1.diff(date2, "day");
+
+// Get the relative time from reference date
+const relativeTime = date1.relative({ from: new Date() });
+
+// Format the date and time with locale options
+const formattedDate = date1.toString("en-US");
 ```
 
-## **Getters/Setters**
+## **API**
+
+Features
+
+### **Getters/Setters**
 
 The following getters are available:
 
@@ -35,54 +56,43 @@ The following getters are available:
 - `minutes`: Returns and updates the minutes component of the date.
 - `seconds`: Returns and updates the seconds component of the date.
 - `milliseconds`: Returns and updates the milliseconds component of the date.
-- `date`: Returns the current instance as a Date Class.
-- `options`: Returns the current instance Intl.RelativeTimeFormatOptions.
-- `time`: Returns the number of milliseconds for this date since the epoch.
 
-## **Setters**
-
-The following setters are available:
-
-- `setYear(year)`: Sets the year component of the date.
-- `setMonth(month)`: Sets the month component of the date.
-- `setDay(day)`: Sets the day component of the date.
-- `setHours(hours)`: Sets the hours component of the date.
-- `setMinutes(minutes)`: Sets the minutes component of the date.
-- `setSeconds(seconds)`: Sets the seconds component of the date.
-- `setMilliseconds(milliseconds)`: Sets the milliseconds component of the date.
-
-## **Properties**
+### **Properties**
 
 The following properties are available:
 
-- `date`: A readonly Date object representing the current date and time.
-- `options`: A readonly Intl.RelativeTimeFormatOptions object representing the formatting options for the DateTime class.
-- `time`: A readonly number representing the elapsed time in milliseconds since the Unix epoch.
+- `date`: A Date object representing the current date and time.
+- `options`: The date and time format options.
+- `time`: The time in in milliseconds since the Unix epoch.
 
-## **Methods**
+### **Instance Methods**
 
 The following methods are available:
 
-- `equals(target)`: Returns whether two dates are equal.
-- `clone()`: Creates a deep copy of the current DateTime object.
 - `toISOString()`: Returns the date in ISO 8601 format (YYYY-MM-DDTHH:mm:ss.SSSZ).
-- `toString(locales?)`: Formats the date using the specified locales and options.
-- `format(options)`: Formats the date according to the specified options.
-- `diff(target, output?, float?)`: Calculates the difference between two dates in a specified unit of time (e.g., years, months, days, hours, minutes, seconds).
-- `relative(options)`: Returns a relative date format string (e.g., "just now", "in an hour", etc.).
+- `toString(locales?)`: Formats the date according to the default or the specified locales.
+- `format(options)`: Formats the date according to the default or specified options.
+- `equals(target)`: Checks whether the date and time is equal to the target date and time.
+- `clone()`: Creates a deep copy of the current DateTime object.
+- `diff(target, output?, float?)`: Calculates the difference between two date and times (e.g., years, months, days, hours, minutes, seconds).
+- `relative(options)`: Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
 
-## **Class Static Methods**
+### **Static Methods**
 
 The following methods are available:
 
-- `min(a, b)`: Returns the smallest of two dates.
-- `max(a, b)`: Returns the largest of two dates.
-- `equals(a, b)`: Returns whether two dates are equal.
+- `min(a, b)`: Returns the earlier of two date and time objects.
+- `max(a, b)`: Returns the later of two date and time objects.
+- `equals(a, b)`: Checks if two date and time objects are equal.
 
 ## **License**
 
-This library is licensed under the CC BY-NC-ND 4.0 DEED License.
+Attribution-NonCommercial-NoDerivatives 4.0 International
 
 ## **Contributing**
 
-If you'd like to contribute to this library, please fork the repository and submit a pull request with your changes. We appreciate any feedback or suggestions!
+Thank you for your interest in contributing to this project! Please ensure that any contributions respect the licensing terms specified. If you encounter any issues or have suggestions, feel free to report them. All issues will be well received and addressed to the best of our ability. We appreciate your support and contributions!
+
+### **Authors**
+
+- [Tiago Terenas Almeida](https://github.com/tiagomta)

@@ -65,7 +65,7 @@ export class DateTime {
    * Creates a new DateTime instance.
    * 
    * @param {Date|number|string|DateTime} [value] - The date and time value.
-   * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
+   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
    */
   constructor(value, options) {
     if (value) {
@@ -151,21 +151,21 @@ export class DateTime {
   }
 
   /**
-   * @returns {Date} A date instance.
+   * @returns {Date} A Date object representing the current date and time.
    */
   get date() {
     return new Date(this.#instance);
   }
 
   /**
-   * @returns {Intl.RelativeTimeFormatOptions} The options for the date and time.
+   * @returns {Intl.DateTimeFormatOptions} The date and time format options.
    */
   get options() {
     return this.#options;
   }
 
   /**
-   * @returns {number} The time in milliseconds.
+   * @returns {number} The time in in milliseconds since the Unix epoch.
    */
   get time() {
     return this.#instance.getTime();
@@ -181,7 +181,7 @@ export class DateTime {
   }
 
   /**
-   * Gets the default formatted date and time.
+   * Formats the date according to the default or the specified locales.
    *
    * @param {string} [locales] - The locale to use for formatting.
    * @returns {string} The formatted date and time.
@@ -193,9 +193,9 @@ export class DateTime {
   }
 
   /**
-   * Gets the formatted date and time.
+   * Formats the date according to the default or the specified options.
    *
-   * @param {LocaleOptions & Intl.RelativeTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
+   * @param {LocaleOptions & Intl.DateTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
    * @returns {string} The formatted date and time.
    */
   format(options) {
@@ -218,7 +218,7 @@ export class DateTime {
   }
 
   /**
-   * Creates a clone of the current date and time object.
+   * Creates a deep copy of the current DateTime object.
    *
    * @returns {DateTime} A new date and time object that is a clone of the current object.
    */
@@ -227,7 +227,7 @@ export class DateTime {
   }
 
   /**
-   * Calculates the difference between two date and times.
+   * Calculates the difference between two date and times (e.g., years, months, days, hours, minutes, seconds).
    *
    * @param {DateTime} target - The target date and time.
    * @param {string} output - The output format.
@@ -251,7 +251,7 @@ export class DateTime {
   }
 
   /**
-   * Gets the relative time from the reference date.
+   * Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
    *
    * @param {RelativeOptions & Intl.RelativeTimeFormatOptions} options - The options for relative time calculations.
    * @returns {string} The relative time from the reference date.
@@ -291,7 +291,7 @@ export class DateTime {
  * Creates a new date and time object with default date format.
  *
  * @param {Date|number|string|DateTime} [value] - The date and time value.
- * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const date = (value, options) => new DateTime(value, options);
@@ -300,7 +300,7 @@ export const date = (value, options) => new DateTime(value, options);
  * Creates a new date and time object with default time format.
  *
  * @param {Date|number|string|DateTime} [value] - The date and time value.
- * @param {Intl.RelativeTimeFormatOptions} [options] - The options for the date and time.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const time = (value, options) =>
