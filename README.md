@@ -1,4 +1,4 @@
-# **Date-Time Library**
+# **Vistta Date-Time Library**
 
 This library provides a convenient and flexible way to work with dates and times in JavaScript. It offers a `DateTime` class with various methods for formatting, comparison, and relative time calculations.
 
