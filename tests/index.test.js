@@ -1,6 +1,4 @@
 import { DateTime } from "../index.js";
-import { describe, it } from "node:test";
-import assert from "node:assert";
 
 const DEFAULT_DATE = "1996-09-14";
 const DEFAULT_DIFF = 15;
