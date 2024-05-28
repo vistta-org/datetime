@@ -26,6 +26,9 @@ jobs:
         name: Checkout Modules
         run: git submodule update --remote
       - 
+        name: Setup Node
+        run: npm ci
+      - 
         name: "Publish Package"
         uses: ./.gitea/actions/npm-publish
         with:
