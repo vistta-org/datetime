@@ -64,20 +64,20 @@ export class DateTime {
   /**
    * Creates a new DateTime instance.
    * 
-   * @param {Date|number|string|DateTime} [value] - The date and time value.
-   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+   * @param {Date|number|string|DateTime|Intl.DateTimeFormatOptions} [arg1] - The date and time value or options.
+   * @param {Intl.DateTimeFormatOptions} [arg2] - The options for the date and time.
    */
-  constructor(value, options) {
-    if (value) {
-      if (typeof value === "string" || typeof value === "number")
-        this.#instance = new Date(value);
-      else if (value instanceof Date) this.#instance = new Date(value);
-      else if (value instanceof DateTime) {
-        this.#instance = value.date;
-        Object.assign(this.#options, value.options);
-      } else this.#instance = new Date();
+  constructor(arg1, arg2) {
+    if (arg1) {
+      if (typeof arg1 === "string" || typeof arg1 === "number")
+        this.#instance = new Date(arg1);
+      else if (arg1 instanceof Date) this.#instance = new Date(arg1);
+      else if (arg1 instanceof DateTime) {
+        this.#instance = arg1.date;
+        Object.assign(this.#options, arg1.options);
+      } else (arg2 = arg1, this.#instance = new Date());
     } else this.#instance = new Date();
-    Object.assign(this.#options, options);
+    if(typeof arg2 === "object") Object.assign(this.#options, arg2);
   }
 
   /**
