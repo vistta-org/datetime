@@ -7,13 +7,13 @@ This library provides a convenient and flexible way to work with dates and times
 ### **Install**
 
 ```sh
-npm install @vistta/
+npm install @vistta/datetime
 ```
 
 ### **Usage**
 
 ```javascript
-import { DateTime, date, time } from "@vistta/";
+import { DateTime, date, time } from "@vistta/datetime";
 // Create a new DateTime object with default date format
 const date1 = new DateTime();
 
@@ -39,6 +39,16 @@ const relativeTime = date1.relative({ from: new Date() });
 
 // Format the date and time with locale options
 const formattedDate = date1.toString("en-US");
+```
+
+You can also make DateTime available globally by using
+
+
+
+```javascript
+import "@vistta/datetime/global";
+// Create a new DateTime object with default date format
+const date = new DateTime();
 ```
 
 ## **API**

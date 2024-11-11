@@ -303,7 +303,12 @@ export class DateTime {
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
-export const date = (value, options) => new DateTime(value, options);
+export const date = (value, options) => 
+  new DateTime(
+    value,
+    // @ts-ignore
+    Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
+  );
 
 /**
  * Creates a new date and time object with default time format.
@@ -315,7 +320,8 @@ export const date = (value, options) => new DateTime(value, options);
 export const time = (value, options) =>
   new DateTime(
     value,
-    Object.assign({ hour: "numeric", minute: "numeric" }, options),
+    // @ts-ignore
+    Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
   );
 
 export default DateTime;
