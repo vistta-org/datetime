@@ -29,7 +29,7 @@ export class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the earliest time value.
+   * @returns {DateTime | null} The date and time with the earliest time value.
    */
   static min(a, b) {
     if (a instanceof DateTime && b instanceof DateTime)
@@ -42,7 +42,7 @@ export class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the latest time value.
+   * @returns {DateTime | null} The date and time with the latest time value.
    */
   static max(a, b) {
     if (a instanceof DateTime && b instanceof DateTime)
@@ -59,6 +59,15 @@ export class DateTime {
    */
   static equals(a, b) {
     return a instanceof DateTime && a.equals(b);
+  }
+
+  /**
+   * Gets the current time in in milliseconds since the Unix epoch.
+   * 
+   * @returns {number} The time in in milliseconds since the Unix epoch.
+   */
+  static now() {
+    return new DateTime().time;
   }
 
   /**
@@ -232,7 +241,7 @@ export class DateTime {
    * @param {DateTime} target - The target date and time.
    * @param {string} output - The output format.
    * @param {boolean} [float] - Whether to use floating-point numbers.
-   * @returns {number} The difference between the two date and times.
+   * @returns {number | null} The difference between the two date and times.
    */
   diff(target, output, float) {
     if (!(target instanceof DateTime)) return null;

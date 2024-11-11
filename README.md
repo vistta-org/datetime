@@ -1,4 +1,4 @@
-# **VISTTA Date-Time Library**
+# **VISTTA DateTime Library**
 
 This library provides a convenient and flexible way to work with dates and times in JavaScript. It offers a `DateTime` class with various methods for formatting, comparison, and relative time calculations.
 
@@ -7,13 +7,13 @@ This library provides a convenient and flexible way to work with dates and times
 ### **Install**
 
 ```sh
-npm install @vistta/date-time
+npm install @vistta/
 ```
 
 ### **Usage**
 
 ```javascript
-import { DateTime, date, time } from "@vistta/date-time";
+import { DateTime, date, time } from "@vistta/";
 // Create a new DateTime object with default date format
 const date1 = new DateTime();
 
@@ -71,7 +71,7 @@ class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the earliest time value.
+   * @returns {DateTime | null} The date and time with the earliest time value.
    */
   static min(a, b);
 
@@ -80,7 +80,7 @@ class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the latest time value.
+   * @returns {DateTime | null} The date and time with the latest time value.
    */
   static max(a, b);
 
@@ -92,6 +92,13 @@ class DateTime {
    * @returns {boolean} Whether both date and time objects are equal.
    */
   static equals(a, b);
+
+  /**
+   * Gets the current time in in milliseconds since the Unix epoch.
+   * 
+   * @returns {number} The time in in milliseconds since the Unix epoch.
+   */
+  static now();
 
   /**
    * Creates a new DateTime instance.
@@ -210,7 +217,7 @@ class DateTime {
    * @param {DateTime} target - The target date and time.
    * @param {string} output - The output format.
    * @param {boolean} [float] - Whether to use floating-point numbers.
-   * @returns {number} The difference between the two date and times.
+   * @returns {number | null} The difference between the two date and times.
    */
   diff(target, output, float);
 
