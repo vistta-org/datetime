@@ -7,3 +7,5 @@ on:
 jobs:
   validation:
     uses: ./.gitea/workflows/validation.yml
+    with:
+      directory: ./packages/datetime
