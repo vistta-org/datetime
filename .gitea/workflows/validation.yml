@@ -6,6 +6,6 @@ on:
       - master
 jobs:
   validation:
-    uses: ./.gitea/templates/validation.yml
+    uses: ./.gitea/workflows/validation.yml
       env:
         PACKAGE_NAME: datetime
