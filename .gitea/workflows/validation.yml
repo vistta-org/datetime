@@ -6,6 +6,6 @@ on:
       - master
 jobs:
   validation:
-    uses: ./.gitea/workflows/validation.yml
+    uses: vistta/workflows/validation.yml
     with:
       directory: ./packages/datetime
