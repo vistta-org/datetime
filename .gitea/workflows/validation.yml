@@ -10,6 +10,6 @@ jobs:
     container:
       image: node:22
     steps:
-      - uses: ./.gitea/actions/templates/validation.yml
+      - uses: .gitea/templates/validation.yml
         env:
           PACKAGE_NAME: datetime
