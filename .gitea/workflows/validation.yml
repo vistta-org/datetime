@@ -5,11 +5,7 @@ on:
     branches:    
       - master
 jobs:
-  Validation:
-    runs-on: ubuntu-latest
-    container:
-      image: node:22
-    steps:
-      - uses: ./../../.gitea/templates/validation.yml
-        env:
-          PACKAGE_NAME: datetime
+  validation:
+    uses: ./.gitea/templates/validation.yml
+      env:
+        PACKAGE_NAME: datetime
