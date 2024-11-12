@@ -7,5 +7,3 @@ on:
 jobs:
   validation:
     uses: vistta/vistta/.gitea/workflows/validation.yml@development
-      env:
-        PACKAGE_NAME: datetime
