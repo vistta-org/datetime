@@ -6,4 +6,4 @@ on:
       - master
 jobs:
   validation:
-    uses: .gitea/workflows/validation.yml@development
+    uses: ./.gitea/workflows/validation.yml
