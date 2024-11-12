@@ -6,6 +6,6 @@ on:
       - master
 jobs:
   validation:
-    uses: vistta/workflows/validation.yml
+    uses: vistta/workflows/validation.yml@master
     with:
       directory: ./packages/datetime
