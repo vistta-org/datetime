@@ -33,6 +33,7 @@ jobs:
         with:
           working-directory: ./packages/${{ env.module }}
           token: ${{ secrets.GIT_TOKEN }}
+        continue-on-error: true
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
