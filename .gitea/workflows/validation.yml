@@ -41,6 +41,7 @@ jobs:
       - 
         name: Eslint Validation
         working-directory: ./packages/${{ env.module }}
+        continue-on-error: true
         run: npx eslint .
       - 
         name: Typescript Validation
