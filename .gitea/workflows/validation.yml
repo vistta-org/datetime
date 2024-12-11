@@ -20,7 +20,7 @@ jobs:
           ref: ${{ gitea.event.pull_request.head.ref }}
           token: ${{ secrets.GIT_TOKEN }}
           fetch-depth: 0
-          submodules: recursive
+          submodules: true
       - 
         name: Checkout Modules
         run: git submodule update --remote
@@ -34,6 +34,7 @@ jobs:
         with:
           token: ${{ secrets.GIT_TOKEN }}
           command: issues close
+          args: --fromCommit --milestone ${{ gitea.event.pull_request.milestone.id }}
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
