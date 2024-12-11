@@ -33,8 +33,7 @@ jobs:
         working-directory: ./packages/${{ env.module }}
         with:
           token: ${{ secrets.GIT_TOKEN }}
-          command: issues close
-          args: --fromCommit --milestone ${{ gitea.event.pull_request.milestone.id }}
+          command: issues close --fromCommit --milestone ${{ gitea.event.pull_request.milestone.id }}
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
