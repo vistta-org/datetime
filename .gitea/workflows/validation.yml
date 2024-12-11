@@ -20,7 +20,7 @@ jobs:
           ref: ${{ gitea.event.pull_request.head.ref }}
           token: ${{ secrets.GIT_TOKEN }}
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
       - 
         name: Checkout Modules
         run: git submodule update --remote
@@ -29,10 +29,13 @@ jobs:
         run: npm i
       - 
         name: Close Issues
-        uses: ./.gitea/actions/close-issues
+        uses: https://git.vistta.org/actions/gitea@v1
+        working-directory: ./packages/${{ env.module }}
         with:
-          working-directory: ./packages/${{ env.module }}
           token: ${{ secrets.GIT_TOKEN }}
+          command: issues close
+          args: 
+            milestone: ${{ gitea.event.pull_request.milestone.id }}
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
