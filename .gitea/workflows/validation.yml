@@ -34,8 +34,6 @@ jobs:
         with:
           token: ${{ secrets.GIT_TOKEN }}
           command: issues close
-          args: 
-            milestone: ${{ gitea.event.pull_request.milestone.id }}
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
