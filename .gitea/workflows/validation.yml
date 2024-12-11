@@ -22,15 +22,15 @@ jobs:
           fetch-depth: 0
           submodules: true
       - 
-        name: Setup Node
-        run: npm i
-      - 
         name: Close Issues
-        uses: https://git.vistta.org/actions/gitea@v1
+        uses: actions/gitea@v1
         working-directory: ./packages/${{ env.module }}
         with:
           token: ${{ secrets.GIT_TOKEN }}
           command: issues close --fromCommit --milestone ${{ gitea.event.pull_request.milestone.id }}
+      - 
+        name: Setup Node
+        run: npm ci
       - 
         name: Module Validation
         working-directory: ./packages/${{ env.module }}
