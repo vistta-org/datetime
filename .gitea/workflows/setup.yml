@@ -34,4 +34,3 @@ jobs:
         uses: tiagomta/gitea@v1
         with:
           command: milestone create "${{ gitea.event.pull_request.labels[0].name }} (v${{ steps.version.outputs.result }})"
-          working-directory: ./packages/${{ env.module }}
