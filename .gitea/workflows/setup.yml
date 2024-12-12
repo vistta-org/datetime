@@ -26,10 +26,12 @@ jobs:
         name: Version Increment
         id: version
         uses: tiagomta/npm@v1
+        working-directory: ./packages/${{ env.module }}
         with:
           command: version increment "${{ gitea.event.pull_request.labels[0].name }}" --email devops@vistta.org
       - 
         name: Create Milestone
         uses: tiagomta/gitea@v1
+        working-directory: ./packages/${{ env.module }}
         with:
           command: milestone create "${{ gitea.event.pull_request.labels[0].name }} (v${{ steps.version.outputs.result }})"
