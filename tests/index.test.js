@@ -3,68 +3,68 @@ import { DateTime } from "../index.js";
 const DEFAULT_DATE = "1996-09-14";
 const DEFAULT_DIFF = 15;
 
-describe("DateTime", () => {
-  it("Constructor: String", () => {
-    assert.ok(!isNaN(new DateTime(DEFAULT_DATE).time));
+suite("DateTime", () => {
+  test("Constructor: String", () => {
+    expect(!isNaN(new DateTime(DEFAULT_DATE).time)).toEqual(true);
   });
 
-  it("Constructor: Number", () => {
-    assert.ok(!isNaN(new DateTime(1643723400).time));
+  test("Constructor: Number", () => {
+    expect(!isNaN(new DateTime(1643723400).time)).toEqual(true);
   });
 
-  it("Constructor: Date", () => {
-    assert.ok(!isNaN(new DateTime(new Date()).time));
+  test("Constructor: Date", () => {
+    expect(!isNaN(new DateTime(new Date()).time)).toEqual(true);
   });
 
-  it("Constructor: DateTime", () => {
-    assert.ok(!isNaN(new DateTime(new DateTime()).time));
+  test("Constructor: DateTime", () => {
+    expect(!isNaN(new DateTime(new DateTime()).time)).toEqual(true);
   });
 
-  it("Min", () => {
+  test("Min", () => {
     const a = new DateTime(DEFAULT_DATE);
     const b = new DateTime();
-    assert.equal(DateTime.min(a, b).time, b.time);
+    expect(DateTime.min(a, b).time).toEqual(b.time);
   });
 
-  it("Max", () => {
+  test("Max", () => {
     const a = new DateTime(DEFAULT_DATE);
     const b = new DateTime();
-    assert.equal(DateTime.max(a, b).time, a.time);
+    expect(DateTime.max(a, b).time).toEqual(a.time);
   });
 
-  it("Equals", () => {
-    assert.ok(
+  test("Equals", () => {
+    expect(
       DateTime.equals(new DateTime(DEFAULT_DATE), new DateTime(DEFAULT_DATE)),
-    );
-    assert.ok(new DateTime(DEFAULT_DATE).equals(new DateTime(DEFAULT_DATE)));
+    ).toEqual(true);
+    expect(new DateTime(DEFAULT_DATE).equals(new DateTime(DEFAULT_DATE))).toEqual(true);
   });
 
-  it("Clone", () => {
+  test("Clone", () => {
     const a = new DateTime(DEFAULT_DATE);
     const b = a.clone();
-    assert.equal(a.time, b.time);
+    expect(a.time).toEqual(b.time);
   });
 
-  it("ToISOString", () => {
-    assert.equal(typeof new DateTime(DEFAULT_DATE).toISOString(), "string");
+  test("ToISOString", () => {
+    expect(typeof new DateTime(DEFAULT_DATE).toISOString()).toEqual("string");
   });
 
-  it("ToString", () => {
-    assert.equal(typeof new DateTime(DEFAULT_DATE).toString(), "string");
+  test("ToString", () => {
+    expect(typeof new DateTime(DEFAULT_DATE).toString()).toEqual("string");
   });
 
-  it("Format", () => {
-    assert.equal(typeof new DateTime(DEFAULT_DATE).format(), "string");
+  test("Format", () => {
+    expect(typeof new DateTime(DEFAULT_DATE).format()).toEqual("string");
   });
 
-  it("Diff", () => {
+  test("Diff", () => {
     const a = new DateTime(DEFAULT_DATE);
     const b = a.clone();
     b.day += DEFAULT_DIFF;
-    assert.equal(b.diff(a, "day"), DEFAULT_DIFF);
+    expect(b.diff(a, "day")).toEqual(DEFAULT_DIFF);
   });
 
-  it("Relative", () => {
-    assert.equal(new DateTime().relative(), "just now");
+  test("Relative", () => {
+    expect(new DateTime().relative()).toEqual("just now");
   });
 });

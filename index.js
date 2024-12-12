@@ -29,7 +29,7 @@ export class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the earliest time value.
+   * @returns {DateTime | null} The date and time with the earliest time value.
    */
   static min(a, b) {
     if (a instanceof DateTime && b instanceof DateTime)
@@ -42,7 +42,7 @@ export class DateTime {
    *
    * @param {DateTime} a The first date and time object.
    * @param {DateTime} b The second date and time object.
-   * @returns {DateTime} The date and time with the latest time value.
+   * @returns {DateTime | null} The date and time with the latest time value.
    */
   static max(a, b) {
     if (a instanceof DateTime && b instanceof DateTime)
@@ -62,22 +62,31 @@ export class DateTime {
   }
 
   /**
+   * Gets the current time in in milliseconds since the Unix epoch.
+   * 
+   * @returns {number} The time in in milliseconds since the Unix epoch.
+   */
+  static now() {
+    return new DateTime().time;
+  }
+
+  /**
    * Creates a new DateTime instance.
    * 
-   * @param {Date|number|string|DateTime} [value] - The date and time value.
-   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+   * @param {Date|number|string|DateTime|Intl.DateTimeFormatOptions} [arg1] - The date and time value or options.
+   * @param {Intl.DateTimeFormatOptions} [arg2] - The options for the date and time.
    */
-  constructor(value, options) {
-    if (value) {
-      if (typeof value === "string" || typeof value === "number")
-        this.#instance = new Date(value);
-      else if (value instanceof Date) this.#instance = new Date(value);
-      else if (value instanceof DateTime) {
-        this.#instance = value.date;
-        Object.assign(this.#options, value.options);
-      } else this.#instance = new Date();
+  constructor(arg1, arg2) {
+    if (arg1) {
+      if (typeof arg1 === "string" || typeof arg1 === "number")
+        this.#instance = new Date(arg1);
+      else if (arg1 instanceof Date) this.#instance = new Date(arg1);
+      else if (arg1 instanceof DateTime) {
+        this.#instance = arg1.date;
+        Object.assign(this.#options, arg1.options);
+      } else (arg2 = arg1, this.#instance = new Date());
     } else this.#instance = new Date();
-    Object.assign(this.#options, options);
+    if(typeof arg2 === "object") Object.assign(this.#options, arg2);
   }
 
   /**
@@ -232,7 +241,7 @@ export class DateTime {
    * @param {DateTime} target - The target date and time.
    * @param {string} output - The output format.
    * @param {boolean} [float] - Whether to use floating-point numbers.
-   * @returns {number} The difference between the two date and times.
+   * @returns {number | null} The difference between the two date and times.
    */
   diff(target, output, float) {
     if (!(target instanceof DateTime)) return null;
@@ -294,7 +303,12 @@ export class DateTime {
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
-export const date = (value, options) => new DateTime(value, options);
+export const date = (value, options) => 
+  new DateTime(
+    value,
+    // @ts-ignore
+    Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
+  );
 
 /**
  * Creates a new date and time object with default time format.
@@ -306,7 +320,8 @@ export const date = (value, options) => new DateTime(value, options);
 export const time = (value, options) =>
   new DateTime(
     value,
-    Object.assign({ hour: "numeric", minute: "numeric" }, options),
+    // @ts-ignore
+    Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
   );
 
 export default DateTime;

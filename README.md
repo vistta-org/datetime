@@ -1,4 +1,4 @@
-# **Vistta Date-Time Library**
+# **VISTTA DateTime Library**
 
 This library provides a convenient and flexible way to work with dates and times in JavaScript. It offers a `DateTime` class with various methods for formatting, comparison, and relative time calculations.
 
@@ -7,13 +7,13 @@ This library provides a convenient and flexible way to work with dates and times
 ### **Install**
 
 ```sh
-npm install @vistta/date-time
+npm install @vistta/datetime
 ```
 
 ### **Usage**
 
 ```javascript
-import { DateTime, date, time } from "@vistta/date-time";
+import { DateTime, date, time } from "@vistta/datetime";
 // Create a new DateTime object with default date format
 const date1 = new DateTime();
 
@@ -41,49 +41,205 @@ const relativeTime = date1.relative({ from: new Date() });
 const formattedDate = date1.toString("en-US");
 ```
 
+You can also make DateTime available globally by using
+
+
+
+```javascript
+import "@vistta/datetime/global";
+// Create a new DateTime object with default date format
+const date = new DateTime();
+```
+
 ## **API**
 
-Features
+```typescript
+/**
+ * Creates a new date and time object with default date format.
+ *
+ * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @returns {DateTime} A new date and time object.
+ */
+function date(value, options);
 
-### **Getters/Setters**
+/**
+ * Creates a new date and time object with default time format.
+ *
+ * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @returns {DateTime} A new date and time object.
+ */
+function time(value, options);
 
-The following getters are available:
+/**
+ * A class representing a date and time.
+ */
+class DateTime {
+  /**
+   * Returns the earlier of two date and time objects.
+   *
+   * @param {DateTime} a The first date and time object.
+   * @param {DateTime} b The second date and time object.
+   * @returns {DateTime | null} The date and time with the earliest time value.
+   */
+  static min(a, b);
 
-- `year`: Returns and updates the year component of the date.
-- `month`: Returns and updates the month component of the date.
-- `day`: Returns and updates the day component of the date.
-- `hours`: Returns and updates the hours component of the date.
-- `minutes`: Returns and updates the minutes component of the date.
-- `seconds`: Returns and updates the seconds component of the date.
-- `milliseconds`: Returns and updates the milliseconds component of the date.
+  /**
+   * Returns the later of two date and time objects.
+   *
+   * @param {DateTime} a The first date and time object.
+   * @param {DateTime} b The second date and time object.
+   * @returns {DateTime | null} The date and time with the latest time value.
+   */
+  static max(a, b);
 
-### **Properties**
+  /**
+   * Checks if two date and time objects are equal.
+   *
+   * @param {DateTime} a The first date and time object.
+   * @param {DateTime} b The second date and time object.
+   * @returns {boolean} Whether both date and time objects are equal.
+   */
+  static equals(a, b);
 
-The following properties are available:
+  /**
+   * Gets the current time in in milliseconds since the Unix epoch.
+   * 
+   * @returns {number} The time in in milliseconds since the Unix epoch.
+   */
+  static now();
 
-- `date`: A Date object representing the current date and time.
-- `options`: The date and time format options.
-- `time`: The time in in milliseconds since the Unix epoch.
+  /**
+   * Creates a new DateTime instance.
+   *
+   * @param {Date|number|string|DateTime} [value] - The date and time value.
+   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+   */
+  constructor(value, options);
 
-### **Instance Methods**
+  /**
+   * @returns {number} The year of the date and time.
+   */
+  get year();
 
-The following methods are available:
+  /**
+   * @param {number} value - The new year of the date and time.
+   */
+  set year(value);
 
-- `toISOString()`: Returns the date in ISO 8601 format (YYYY-MM-DDTHH:mm:ss.SSSZ).
-- `toString(locales?)`: Formats the date according to the default or the specified locales.
-- `format(options)`: Formats the date according to the default or specified options.
-- `equals(target)`: Checks whether the date and time is equal to the target date and time.
-- `clone()`: Creates a deep copy of the current DateTime object.
-- `diff(target, output?, float?)`: Calculates the difference between two date and times (e.g., years, months, days, hours, minutes, seconds).
-- `relative(options)`: Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
+  /**
+   * @returns {number} The month of the date and time.
+   */
+  get month();
 
-### **Static Methods**
+  /**
+   * @param {number} value - The new month of the date and time.
+   */
+  set month(value);
 
-The following methods are available:
+  /**
+   * @returns {number} The day of the month of the date and time.
+   */
+  get day();
 
-- `min(a, b)`: Returns the earlier of two date and time objects.
-- `max(a, b)`: Returns the later of two date and time objects.
-- `equals(a, b)`: Checks if two date and time objects are equal.
+  /**
+   * @param {number} value - The new day of the month of the date and time.
+   */
+  set day(value);
+
+  /**
+   * @returns {number} The hour of the date and time.
+   */
+  get hours();
+
+  /**
+   * @param {number} value - The new hour of the date and time.
+   */
+  set hours(value);
+
+  /**
+   * @returns {number} The minute of the date and time.
+   */
+  get minutes();
+
+  /**
+   * @param {number} value - The new minute of the date and time.
+   */
+  set minutes(value);
+
+  /**
+   * @returns {Date} A Date object representing the current date and time.
+   */
+  get date();
+
+  /**
+   * @returns {Intl.DateTimeFormatOptions} The date and time format options.
+   */
+  get options();
+
+  /**
+   * @returns {number} The time in in milliseconds since the Unix epoch.
+   */
+  get time();
+
+  /**
+   * Gets the ISO 8601 formatted date and time.
+   *
+   * @returns {string} The ISO 8601 formatted date and time.
+   */
+  toISOString();
+
+  /**
+   * Formats the date according to the default or the specified locales.
+   *
+   * @param {string} [locales] - The locale to use for formatting.
+   * @returns {string} The formatted date and time.
+   */
+  toString(locales);
+
+  /**
+   * Formats the date according to the default or the specified options.
+   *
+   * @param {LocaleOptions & Intl.DateTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
+   * @returns {string} The formatted date and time.
+   */
+  format(options);
+
+  /**
+   * Checks whether the date and time is equal to the target date and time.
+   *
+   * @param {DateTime} target - Comparison target.
+   * @returns {boolean} Whether the date and time is equal to the target date and time.
+   */
+  equals(target);
+
+  /**
+   * Creates a deep copy of the current DateTime object.
+   *
+   * @returns {DateTime} A new date and time object that is a clone of the current object.
+   */
+  clone();
+
+  /**
+   * Calculates the difference between two date and times (e.g., years, months, days, hours, minutes, seconds).
+   *
+   * @param {DateTime} target - The target date and time.
+   * @param {string} output - The output format.
+   * @param {boolean} [float] - Whether to use floating-point numbers.
+   * @returns {number | null} The difference between the two date and times.
+   */
+  diff(target, output, float);
+
+  /**
+   * Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
+   *
+   * @param {RelativeOptions & Intl.RelativeTimeFormatOptions} options - The options for relative time calculations.
+   * @returns {string} The relative time from the reference date.
+   */
+  relative(options);
+}
+```
 
 ## **License**
 

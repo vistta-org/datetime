@@ -1,20 +1,21 @@
 {
-  "name": "@vistta/date-time",
-  "version": "0.1.0",
-  "description": "Vistta Date-Time Library",
+  "name": "@vistta/datetime",
+  "version": "0.2.0",
+  "description": "Vistta DateTime Library",
   "main": "index.js",
+  "types": "global.d.ts",
   "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./global": "./global.js"
+  },
   "repository": {
     "type": "git",
-    "url": "https://git.vistta.org/vistta/date-time.git"
+    "url": "https://git.vistta.org/vistta/datetime.git"
   },
   "scripts": {
     "postinstall": ""
   },
   "author": "Tiago Terenas Almeida",
-  "license": "CC BY-NC-ND 4.0 DEED",
-  "files": [
-    "LICENSE",
-    "tsconfig.json"
-  ]
+  "license": "CC BY-NC-ND 4.0 DEED"
 }
