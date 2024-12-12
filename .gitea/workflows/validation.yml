@@ -14,7 +14,7 @@ jobs:
     steps:
       - 
         name: Checkout
-        uses: https://git.vistta.org/actions/checkout@v1
+        uses: tiagomta/checkout@v1
         with:
           repository: vistta/vistta
           ref: ${{ gitea.event.pull_request.head.ref }}
@@ -23,7 +23,7 @@ jobs:
           submodules: true
       - 
         name: Close Issues
-        uses: actions/gitea@v1
+        uses: tiagomta/gitea@v1
         working-directory: ./packages/${{ env.module }}
         with:
           token: ${{ secrets.GIT_TOKEN }}
