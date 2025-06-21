@@ -63,7 +63,7 @@ export class DateTime {
 
   /**
    * Gets the current time in in milliseconds since the Unix epoch.
-   * 
+   *
    * @returns {number} The time in in milliseconds since the Unix epoch.
    */
   static now() {
@@ -72,7 +72,7 @@ export class DateTime {
 
   /**
    * Creates a new DateTime instance.
-   * 
+   *
    * @param {Date|number|string|DateTime|Intl.DateTimeFormatOptions} [arg1] - The date and time value or options.
    * @param {Intl.DateTimeFormatOptions} [arg2] - The options for the date and time.
    */
@@ -84,9 +84,9 @@ export class DateTime {
       else if (arg1 instanceof DateTime) {
         this.#instance = arg1.date;
         Object.assign(this.#options, arg1.options);
-      } else (arg2 = arg1, this.#instance = new Date());
+      } else (arg2 = arg1), (this.#instance = new Date());
     } else this.#instance = new Date();
-    if(typeof arg2 === "object") Object.assign(this.#options, arg2);
+    if (typeof arg2 === "object") Object.assign(this.#options, arg2);
   }
 
   /**
@@ -197,7 +197,7 @@ export class DateTime {
    */
   toString(locales) {
     return new Intl.DateTimeFormat(locales || getLang(), this.#options).format(
-      this.#instance,
+      this.#instance
     );
   }
 
@@ -280,17 +280,17 @@ export class DateTime {
     else if (Math.abs(diff) > HOUR_IN_MILLIS)
       return formatter.format(
         Math.trunc((diff % DAY_IN_MILLIS) / HOUR_IN_MILLIS),
-        "hour",
+        "hour"
       );
     else if (Math.abs(diff) > MIN_IN_MILLIS)
       return formatter.format(
         Math.trunc((diff % HOUR_IN_MILLIS) / MIN_IN_MILLIS),
-        "minute",
+        "minute"
       );
     else if (Math.abs(diff) > SEC_IN_MILLIS)
       return formatter.format(
         Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS),
-        "second",
+        "second"
       );
     return "just now";
   }
@@ -303,11 +303,11 @@ export class DateTime {
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
-export const date = (value, options) => 
+export const date = (value, options) =>
   new DateTime(
     value,
     // @ts-ignore
-    Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
+    Object.assign(options, { dateStyle: "short", timeStyle: undefined })
   );
 
 /**
@@ -321,8 +321,53 @@ export const time = (value, options) =>
   new DateTime(
     value,
     // @ts-ignore
-    Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
+    Object.assign(options, { dateStyle: undefined, timeStyle: "short" })
   );
+
+/**
+ * Transforms a date value or string value into a formatted string.
+ *
+ * @param {Date|number|string|DateTime} [value] - The date value.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date .
+ * @returns {String} The formatted date.
+ */
+export const formatDate = (
+  value,
+  options = { dateStyle: "short", timeStyle: null }
+) => {
+  if (value instanceof DateTime) return value.format(options);
+  return new DateTime(value, options).format(options);
+};
+
+/**
+ * Transforms a time value or string value into a formatted string.
+ *
+ * @param {Date|number|string|DateTime} [value] - The time value.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the time.
+ * @returns {String} The formatted time.
+ */
+export const formatTime = (
+  value,
+  options = { dateStyle: null, timeStyle: "short" }
+) => {
+  if (value instanceof DateTime) return value.format(options);
+  return new DateTime(value, options).format(options);
+};
+
+/**
+ * Transforms a date and time value or string value into a formatted string.
+ *
+ * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @returns {String} The formatted date and time.
+ */
+export const formatDateTime = (
+  value,
+  options = { dateStyle: "short", timeStyle: "short" }
+) => {
+  if (value instanceof DateTime) return value.format(options);
+  return new DateTime(value, options).format(options);
+};
 
 export default DateTime;
 
