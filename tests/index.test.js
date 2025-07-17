@@ -33,9 +33,7 @@ suite("DateTime", () => {
   });
 
   test("Equals", () => {
-    expect(
-      DateTime.equals(new DateTime(DEFAULT_DATE), new DateTime(DEFAULT_DATE)),
-    ).toEqual(true);
+    expect(DateTime.equals(new DateTime(DEFAULT_DATE), new DateTime(DEFAULT_DATE))).toEqual(true);
     expect(new DateTime(DEFAULT_DATE).equals(new DateTime(DEFAULT_DATE))).toEqual(true);
   });
 

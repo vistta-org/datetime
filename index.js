@@ -32,8 +32,7 @@ export class DateTime {
    * @returns {DateTime | null} The date and time with the earliest time value.
    */
   static min(a, b) {
-    if (a instanceof DateTime && b instanceof DateTime)
-      return a.time > b.time ? a : b;
+    if (a instanceof DateTime && b instanceof DateTime) return a.time > b.time ? a : b;
     return null;
   }
 
@@ -45,8 +44,7 @@ export class DateTime {
    * @returns {DateTime | null} The date and time with the latest time value.
    */
   static max(a, b) {
-    if (a instanceof DateTime && b instanceof DateTime)
-      return a.time < b.time ? a : b;
+    if (a instanceof DateTime && b instanceof DateTime) return a.time < b.time ? a : b;
     return null;
   }
 
@@ -78,13 +76,12 @@ export class DateTime {
    */
   constructor(arg1, arg2) {
     if (arg1) {
-      if (typeof arg1 === "string" || typeof arg1 === "number")
-        this.#instance = new Date(arg1);
+      if (typeof arg1 === "string" || typeof arg1 === "number") this.#instance = new Date(arg1);
       else if (arg1 instanceof Date) this.#instance = new Date(arg1);
       else if (arg1 instanceof DateTime) {
         this.#instance = arg1.date;
         Object.assign(this.#options, arg1.options);
-      } else (arg2 = arg1), (this.#instance = new Date());
+      } else ((arg2 = arg1), (this.#instance = new Date()));
     } else this.#instance = new Date();
     if (typeof arg2 === "object") Object.assign(this.#options, arg2);
   }
@@ -196,9 +193,7 @@ export class DateTime {
    * @returns {string} The formatted date and time.
    */
   toString(locales) {
-    return new Intl.DateTimeFormat(locales || getLang(), this.#options).format(
-      this.#instance
-    );
+    return new Intl.DateTimeFormat(locales || getLang(), this.#options).format(this.#instance);
   }
 
   /**
@@ -220,10 +215,7 @@ export class DateTime {
    */
   equals(target) {
     const formatter = new Intl.DateTimeFormat(getLang(), this.#options);
-    return (
-      target instanceof DateTime &&
-      formatter.format(this.#instance) === formatter.format(target.date)
-    );
+    return target instanceof DateTime && formatter.format(this.#instance) === formatter.format(target.date);
   }
 
   /**
@@ -248,10 +240,8 @@ export class DateTime {
     const format = (input) => (float ? input : Math.floor(input));
     let result = this.time - target.time;
     if (output?.startsWith("year")) result = this.year - target.year;
-    else if (output?.startsWith("month"))
-      result = (target.year - this.year) * 12 - this.month + target.month;
-    else if (output?.startsWith("week"))
-      result = result / (1000 * 60 * 60 * 24 * 7);
+    else if (output?.startsWith("month")) result = (target.year - this.year) * 12 - this.month + target.month;
+    else if (output?.startsWith("week")) result = result / (1000 * 60 * 60 * 24 * 7);
     else if (output?.startsWith("day")) result = result / (1000 * 60 * 60 * 24);
     else if (output?.startsWith("hour")) result = result / (1000 * 60 * 60);
     else if (output?.startsWith("minute")) result = result / (1000 * 60);
@@ -269,29 +259,12 @@ export class DateTime {
     const from = options?.from || new Date();
     const locales = options?.locales || getLang();
     const formatter = new Intl.RelativeTimeFormat(locales, options);
-    const diff =
-      this.#instance.getTime() -
-      this.#instance.getTimezoneOffset() * 60000 -
-      (from.getTime() - from.getTimezoneOffset() * 60000);
-    if (Math.abs(diff) > WEEK_IN_MILLIS)
-      return formatter.format(Math.trunc(diff / WEEK_IN_MILLIS), "week");
-    else if (Math.abs(diff) > DAY_IN_MILLIS)
-      return formatter.format(Math.trunc(diff / DAY_IN_MILLIS), "day");
-    else if (Math.abs(diff) > HOUR_IN_MILLIS)
-      return formatter.format(
-        Math.trunc((diff % DAY_IN_MILLIS) / HOUR_IN_MILLIS),
-        "hour"
-      );
-    else if (Math.abs(diff) > MIN_IN_MILLIS)
-      return formatter.format(
-        Math.trunc((diff % HOUR_IN_MILLIS) / MIN_IN_MILLIS),
-        "minute"
-      );
-    else if (Math.abs(diff) > SEC_IN_MILLIS)
-      return formatter.format(
-        Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS),
-        "second"
-      );
+    const diff = this.#instance.getTime() - this.#instance.getTimezoneOffset() * 60000 - (from.getTime() - from.getTimezoneOffset() * 60000);
+    if (Math.abs(diff) > WEEK_IN_MILLIS) return formatter.format(Math.trunc(diff / WEEK_IN_MILLIS), "week");
+    else if (Math.abs(diff) > DAY_IN_MILLIS) return formatter.format(Math.trunc(diff / DAY_IN_MILLIS), "day");
+    else if (Math.abs(diff) > HOUR_IN_MILLIS) return formatter.format(Math.trunc((diff % DAY_IN_MILLIS) / HOUR_IN_MILLIS), "hour");
+    else if (Math.abs(diff) > MIN_IN_MILLIS) return formatter.format(Math.trunc((diff % HOUR_IN_MILLIS) / MIN_IN_MILLIS), "minute");
+    else if (Math.abs(diff) > SEC_IN_MILLIS) return formatter.format(Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS), "second");
     return "just now";
   }
 }
@@ -307,7 +280,7 @@ export const date = (value, options) =>
   new DateTime(
     value,
     // @ts-ignore
-    Object.assign(options, { dateStyle: "short", timeStyle: undefined })
+    Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
   );
 
 /**
@@ -321,7 +294,7 @@ export const time = (value, options) =>
   new DateTime(
     value,
     // @ts-ignore
-    Object.assign(options, { dateStyle: undefined, timeStyle: "short" })
+    Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
   );
 
 /**
@@ -331,10 +304,7 @@ export const time = (value, options) =>
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date .
  * @returns {String} The formatted date.
  */
-export const formatDate = (
-  value,
-  options = { dateStyle: "short", timeStyle: null }
-) => {
+export const formatDate = (value, options = { dateStyle: "short", timeStyle: null }) => {
   if (value instanceof DateTime) return value.format(options);
   return new DateTime(value, options).format(options);
 };
@@ -346,10 +316,7 @@ export const formatDate = (
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the time.
  * @returns {String} The formatted time.
  */
-export const formatTime = (
-  value,
-  options = { dateStyle: null, timeStyle: "short" }
-) => {
+export const formatTime = (value, options = { dateStyle: null, timeStyle: "short" }) => {
   if (value instanceof DateTime) return value.format(options);
   return new DateTime(value, options).format(options);
 };
@@ -361,10 +328,7 @@ export const formatTime = (
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {String} The formatted date and time.
  */
-export const formatDateTime = (
-  value,
-  options = { dateStyle: "short", timeStyle: "short" }
-) => {
+export const formatDateTime = (value, options = { dateStyle: "short", timeStyle: "short" }) => {
   if (value instanceof DateTime) return value.format(options);
   return new DateTime(value, options).format(options);
 };
