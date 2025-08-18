@@ -43,8 +43,6 @@ const formattedDate = date1.toString("en-US");
 
 You can also make DateTime available globally by using
 
-
-
 ```javascript
 import "@vistta/datetime/global";
 // Create a new DateTime object with default date format
@@ -105,7 +103,7 @@ class DateTime {
 
   /**
    * Gets the current time in in milliseconds since the Unix epoch.
-   * 
+   *
    * @returns {number} The time in in milliseconds since the Unix epoch.
    */
   static now();
@@ -243,7 +241,7 @@ class DateTime {
 
 ## **License**
 
-Attribution-NonCommercial-NoDerivatives 4.0 International
+Apache 2.0 with Commons Clause
 
 ## **Contributing**
 
