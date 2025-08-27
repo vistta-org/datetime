@@ -129,31 +129,45 @@ export class DateTime {
   }
 
   /**
-   * @returns {number} The hour of the date and time.
+   * @returns {number} The hours of the date and time.
    */
   get hours() {
     return this.#instance.getHours();
   }
 
   /**
-   * @param {number} value - The new hour of the date and time.
+   * @param {number} value - The new hours of the date and time.
    */
   set hours(value) {
     this.#instance.setHours(value);
   }
 
   /**
-   * @returns {number} The minute of the date and time.
+   * @returns {number} The minutes of the date and time.
    */
   get minutes() {
     return this.#instance.getMinutes();
   }
 
   /**
-   * @param {number} value - The new minute of the date and time.
+   * @param {number} value - The new minutes of the date and time.
    */
   set minutes(value) {
     this.#instance.setMinutes(value);
+  }
+
+  /**
+   * @returns {number} The seconds of the date and time.
+   */
+  get seconds() {
+    return this.#instance.getSeconds();
+  }
+
+  /**
+   * @param {number} value - The new seconds of the date and time.
+   */
+  set seconds(value) {
+    this.#instance.setSeconds(value);
   }
 
   /**
