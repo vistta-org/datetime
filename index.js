@@ -225,11 +225,29 @@ export class DateTime {
    * Checks whether the date and time is equal to the target date and time.
    *
    * @param {DateTime} target - Comparison target.
+   * @param {Object} [options] - The comparison options.
+   * @param {boolean} [options.year] - Whether to compare the year.
+   * @param {boolean} [options.month] - Whether to compare the month.
+   * @param {boolean} [options.day] - Whether to compare the day.
+   * @param {boolean} [options.hours] - Whether to compare the hour.
+   * @param {boolean} [options.minutes] - Whether to compare the minute.
+   * @param {boolean} [options.seconds] - Whether to compare the second.
    * @returns {boolean} Whether the date and time is equal to the target date and time.
    */
-  equals(target) {
+  equals(target, options) {
+    if (!(target instanceof DateTime)) return false;
+    const { year, month, day, hours, minutes, seconds } = options || {};
+    if (year || month || day || hours || minutes || seconds)
+      return (
+        (!year || this.year === target.year) &&
+        (!month || this.month === target.month) &&
+        (!day || this.day === target.day) &&
+        (!hours || this.hours === target.hours) &&
+        (!minutes || this.minutes === target.minutes) &&
+        (!seconds || this.seconds === target.seconds)
+      );
     const formatter = new Intl.DateTimeFormat(getLang(), this.#options);
-    return target instanceof DateTime && formatter.format(this.#instance) === formatter.format(target.date);
+    return formatter.format(this.#instance) === formatter.format(target.date);
   }
 
   /**
