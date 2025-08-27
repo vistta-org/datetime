@@ -11,6 +11,10 @@
  * @property {string|string[]} [locales] - The locale to use for formatting.
  */
 
+/**
+ * @typedef {number|number[]|string|Date|DateTime} DateTimeValue
+ */
+
 const WEEK_IN_MILLIS = 6.048e8;
 const DAY_IN_MILLIS = 8.64e7;
 const HOUR_IN_MILLIS = 3.6e6;
@@ -71,19 +75,28 @@ export class DateTime {
   /**
    * Creates a new DateTime instance.
    *
-   * @param {Date|number|string|DateTime|Intl.DateTimeFormatOptions} [arg1] - The date and time value or options.
-   * @param {Intl.DateTimeFormatOptions} [arg2] - The options for the date and time.
+   * @param {DateTimeValue|Intl.DateTimeFormatOptions} [value] - The date and time value or options.
+   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
    */
-  constructor(arg1, arg2) {
-    if (arg1) {
-      if (typeof arg1 === "string" || typeof arg1 === "number") this.#instance = new Date(arg1);
-      else if (arg1 instanceof Date) this.#instance = new Date(arg1);
-      else if (arg1 instanceof DateTime) {
-        this.#instance = arg1.date;
-        Object.assign(this.#options, arg1.options);
-      } else ((arg2 = arg1), (this.#instance = new Date()));
-    } else this.#instance = new Date();
-    if (typeof arg2 === "object") Object.assign(this.#options, arg2);
+  constructor(value, options) {
+    if (typeof value === "object" && !(value instanceof Date) && !(value instanceof DateTime) && !Array.isArray(value))
+      options = value;
+    switch (typeof value) {
+      case "object":
+        // @ts-ignore
+        if (Array.isArray(value)) this.#instance = new Date(...value);
+        else if (value instanceof DateTime) this.#instance = new Date(value.date);
+        else if (value instanceof Date) this.#instance = new Date(value);
+        else this.#instance = new Date();
+        break;
+      case "string":
+      case "number":
+        this.#instance = new Date(value);
+        break;
+      default:
+        this.#instance = new Date();
+    }
+    Object.assign(this.#options, options);
   }
 
   /**
@@ -189,6 +202,13 @@ export class DateTime {
    */
   get time() {
     return this.#instance.getTime();
+  }
+
+  /**
+   * @returns {number} The day of the week of the date and time (0 = Sunday, 1 = Monday, ..., 6 = Saturday).
+   */
+  get weekday() {
+    return this.#instance.getDay();
   }
 
   /**
@@ -304,35 +324,33 @@ export class DateTime {
 /**
  * Creates a new date and time object with default date format.
  *
- * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {DateTimeValue} [value] - The date and time value.
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const date = (value, options) =>
   new DateTime(
     value,
-    // @ts-ignore
     Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
   );
 
 /**
  * Creates a new date and time object with default time format.
  *
- * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {DateTimeValue} [value] - The date and time value.
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
 export const time = (value, options) =>
   new DateTime(
     value,
-    // @ts-ignore
     Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
   );
 
 /**
  * Transforms a date value or string value into a formatted string.
  *
- * @param {Date|number|string|DateTime} [value] - The date value.
+ * @param {DateTimeValue} [value] - The date value.
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date .
  * @returns {String} The formatted date.
  */
@@ -344,7 +362,7 @@ export const formatDate = (value, options = { dateStyle: "short", timeStyle: nul
 /**
  * Transforms a time value or string value into a formatted string.
  *
- * @param {Date|number|string|DateTime} [value] - The time value.
+ * @param {DateTimeValue} [value] - The time value.
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the time.
  * @returns {String} The formatted time.
  */
@@ -356,7 +374,7 @@ export const formatTime = (value, options = { dateStyle: null, timeStyle: "short
 /**
  * Transforms a date and time value or string value into a formatted string.
  *
- * @param {Date|number|string|DateTime} [value] - The date and time value.
+ * @param {DateTimeValue} [value] - The date and time value.
  * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {String} The formatted date and time.
  */
