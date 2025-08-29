@@ -184,6 +184,20 @@ export class DateTime {
   }
 
   /**
+   * @returns {number} The milliseconds of the date and time.
+   */
+  get milliseconds() {
+    return this.#instance.getMilliseconds();
+  }
+
+  /**
+   * @param {number} value - The new milliseconds of the date and time.
+   */
+  set milliseconds(value) {
+    this.#instance.setMilliseconds(value);
+  }
+
+  /**
    * @returns {Date} A Date object representing the current date and time.
    */
   get date() {
@@ -311,12 +325,18 @@ export class DateTime {
     const from = options?.from || new Date();
     const locales = options?.locales || getLang();
     const formatter = new Intl.RelativeTimeFormat(locales, options);
-    const diff = this.#instance.getTime() - this.#instance.getTimezoneOffset() * 60000 - (from.getTime() - from.getTimezoneOffset() * 60000);
+    const diff =
+      this.#instance.getTime() -
+      this.#instance.getTimezoneOffset() * 60000 -
+      (from.getTime() - from.getTimezoneOffset() * 60000);
     if (Math.abs(diff) > WEEK_IN_MILLIS) return formatter.format(Math.trunc(diff / WEEK_IN_MILLIS), "week");
     else if (Math.abs(diff) > DAY_IN_MILLIS) return formatter.format(Math.trunc(diff / DAY_IN_MILLIS), "day");
-    else if (Math.abs(diff) > HOUR_IN_MILLIS) return formatter.format(Math.trunc((diff % DAY_IN_MILLIS) / HOUR_IN_MILLIS), "hour");
-    else if (Math.abs(diff) > MIN_IN_MILLIS) return formatter.format(Math.trunc((diff % HOUR_IN_MILLIS) / MIN_IN_MILLIS), "minute");
-    else if (Math.abs(diff) > SEC_IN_MILLIS) return formatter.format(Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS), "second");
+    else if (Math.abs(diff) > HOUR_IN_MILLIS)
+      return formatter.format(Math.trunc((diff % DAY_IN_MILLIS) / HOUR_IN_MILLIS), "hour");
+    else if (Math.abs(diff) > MIN_IN_MILLIS)
+      return formatter.format(Math.trunc((diff % HOUR_IN_MILLIS) / MIN_IN_MILLIS), "minute");
+    else if (Math.abs(diff) > SEC_IN_MILLIS)
+      return formatter.format(Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS), "second");
     return "just now";
   }
 }
@@ -329,10 +349,7 @@ export class DateTime {
  * @returns {DateTime} A new date and time object.
  */
 export const date = (value, options) =>
-  new DateTime(
-    value,
-    Object.assign(options, { dateStyle: "short", timeStyle: undefined }),
-  );
+  new DateTime(value, Object.assign(options, { dateStyle: "short", timeStyle: undefined }));
 
 /**
  * Creates a new date and time object with default time format.
@@ -342,10 +359,7 @@ export const date = (value, options) =>
  * @returns {DateTime} A new date and time object.
  */
 export const time = (value, options) =>
-  new DateTime(
-    value,
-    Object.assign(options, { dateStyle: undefined, timeStyle: "short" }),
-  );
+  new DateTime(value, Object.assign(options, { dateStyle: undefined, timeStyle: "short" }));
 
 /**
  * Transforms a date value or string value into a formatted string.
