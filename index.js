@@ -1,8 +1,7 @@
 // @ts-check
 
 /**
- * @typedef {Object} DateTimeFormatOptions
- * @extends Intl.DateTimeFormatOptions
+ * @typedef {Object & Intl.DateTimeFormatOptions} DateTimeFormatOptions
  * @property {string|string[]} [locales] - The locale to use for formatting.
  * @property {"mon"|"tue"|"wen"|"thu"|"fri"|"sat"|"sun"} [firstDayOfWeek] - The first day of the week.
  */
