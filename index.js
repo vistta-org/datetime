@@ -1,14 +1,10 @@
 // @ts-check
 
 /**
- * @typedef {Object} LocaleOptions
+ * @typedef {Object} DateTimeFormatOptions
+ * @extends Intl.DateTimeFormatOptions
  * @property {string|string[]} [locales] - The locale to use for formatting.
- */
-
-/**
- * @typedef {Object} RelativeOptions
- * @property {Date} [from] - The reference date for relative time calculations.
- * @property {string|string[]} [locales] - The locale to use for formatting.
+ * @property {"mon"|"tue"|"wen"|"thu"|"fri"|"sat"|"sun"} [firstDayOfWeek] - The first day of the week.
  */
 
 /**
@@ -20,6 +16,7 @@ const DAY_IN_MILLIS = 8.64e7;
 const HOUR_IN_MILLIS = 3.6e6;
 const MIN_IN_MILLIS = 6e4;
 const SEC_IN_MILLIS = 1e3;
+const WEEKDAY_INDEX = { sun: 0, mon: 1, tue: 2, wen: 3, thu: 4, fri: 5, sat: 6 };
 
 /**
  * A class representing a date and time.
@@ -75,8 +72,8 @@ export class DateTime {
   /**
    * Creates a new DateTime instance.
    *
-   * @param {DateTimeValue|Intl.DateTimeFormatOptions} [value] - The date and time value or options.
-   * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+   * @param {DateTimeValue|DateTimeFormatOptions} [value] - The date and time value or options.
+   * @param {DateTimeFormatOptions} [options] - The options for the date and time.
    */
   constructor(value, options) {
     if (typeof value === "object" && !(value instanceof Date) && !(value instanceof DateTime) && !Array.isArray(value))
@@ -205,7 +202,7 @@ export class DateTime {
   }
 
   /**
-   * @returns {Intl.DateTimeFormatOptions} The date and time format options.
+   * @returns {DateTimeFormatOptions} The date and time format options.
    */
   get options() {
     return this.#options;
@@ -237,17 +234,16 @@ export class DateTime {
   /**
    * Formats the date according to the default or the specified locales.
    *
-   * @param {string} [locales] - The locale to use for formatting.
    * @returns {string} The formatted date and time.
    */
-  toString(locales) {
-    return new Intl.DateTimeFormat(locales || getLang(), this.#options).format(this.#instance);
+  toString() {
+    return new Intl.DateTimeFormat(this.#options.locales || getLang(), this.#options).format(this.#instance);
   }
 
   /**
    * Formats the date according to the default or the specified options.
    *
-   * @param {LocaleOptions & Intl.DateTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
+   * @param {DateTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
    * @returns {string} The formatted date and time.
    */
   format(options) {
@@ -280,8 +276,7 @@ export class DateTime {
         (!minutes || this.minutes === target.minutes) &&
         (!seconds || this.seconds === target.seconds)
       );
-    const formatter = new Intl.DateTimeFormat(getLang(), this.#options);
-    return formatter.format(this.#instance) === formatter.format(target.date);
+    return this.#instance.getTime() === new Date(target.date).getTime();
   }
 
   /**
@@ -318,7 +313,7 @@ export class DateTime {
   /**
    * Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
    *
-   * @param {RelativeOptions & Intl.RelativeTimeFormatOptions} options - The options for relative time calculations.
+   * @param {DateTimeFormatOptions & { from?: Date }} options - The options for relative time calculations.
    * @returns {string} The relative time from the reference date.
    */
   relative(options) {
@@ -339,36 +334,156 @@ export class DateTime {
       return formatter.format(Math.trunc((diff % MIN_IN_MILLIS) / SEC_IN_MILLIS), "second");
     return "just now";
   }
+
+  /**
+   * Sets the date and time to the start of the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the start of.
+   * @returns {DateTime} The updated date and time object.
+   */
+  startOf(unit) {
+    switch (unit) {
+      case "year":
+        this.#instance.setMonth(0);
+      // falls through
+      case "month":
+        this.#instance.setDate(1);
+      // falls through
+      case "day":
+        this.#instance.setHours(0);
+      // falls through
+      case "hour":
+        this.#instance.setMinutes(0);
+      // falls through
+      case "minute":
+        this.#instance.setSeconds(0);
+      // falls through
+      case "second":
+        this.#instance.setMilliseconds(0);
+        break;
+      case "week":
+        var firstDayOfWeek = WEEKDAY_INDEX[this.#options.firstDayOfWeek || "sun"];
+        var weekday = this.weekday;
+        if (weekday !== firstDayOfWeek) this.#instance.setDate(this.day - weekday - firstDayOfWeek);
+        this.#instance.setHours(0);
+        this.#instance.setMinutes(0);
+        this.#instance.setSeconds(0);
+        this.#instance.setMilliseconds(0);
+        break;
+    }
+    return this;
+  }
+
+  /**
+   * Sets the date and time to the end of the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the end of.
+   * @returns {DateTime} The updated date and time object.
+   */
+  endOf(unit) {
+    switch (unit) {
+      case "year":
+        this.#instance.setMonth(11);
+      // falls through
+      case "month":
+        this.#instance.setDate(new Date(this.year, this.month + 1, 0).getDate());
+      // falls through
+      case "day":
+        this.#instance.setHours(23);
+      // falls through
+      case "hour":
+        this.#instance.setMinutes(59);
+      // falls through
+      case "minute":
+        this.#instance.setSeconds(59);
+      // falls through
+      case "second":
+        this.#instance.setMilliseconds(999);
+        break;
+      case "week":
+        var firstDayOfWeek = WEEKDAY_INDEX[this.#options.firstDayOfWeek || "sun"];
+        var lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+        var weekday = this.weekday;
+        if (weekday !== lastDayOfWeek) this.#instance.setDate(this.day + 6 - weekday - firstDayOfWeek);
+        this.#instance.setHours(23);
+        this.#instance.setMinutes(59);
+        this.#instance.setSeconds(59);
+        this.#instance.setMilliseconds(999);
+        break;
+    }
+    return this;
+  }
+
+  /**
+   * Moves the date and time forward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {number} step The number of units to move the date and time by (positive or negative).
+   * @returns {DateTime} The updated date and time object.
+   */
+  next(unit, step = 1) {
+    switch (unit) {
+      case "year":
+        this.#instance.setFullYear(this.year + step);
+        break;
+      case "month":
+        this.#instance.setMonth(this.month + step);
+        break;
+      case "week":
+        this.#instance.setDate(this.day + step * 7);
+        break;
+      case "day":
+        this.#instance.setDate(this.day + step);
+        break;
+      case "hour":
+        this.#instance.setHours(this.hours + step);
+        break;
+      case "minute":
+        this.#instance.setMinutes(this.minutes + step);
+        break;
+      case "second":
+        this.#instance.setSeconds(this.seconds + step);
+        break;
+    }
+    return this;
+  }
+
+  /**
+   * Moves the date and time backward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {number} step The number of units to move the date and time by (positive or negative).
+   * @returns {DateTime} The updated date and time object.
+   */
+  previous(unit, step = 1) {
+    return this.next(unit, -step);
+  }
 }
 
 /**
  * Creates a new date and time object with default date format.
  *
  * @param {DateTimeValue} [value] - The date and time value.
- * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @param {DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
-export const date = (value, options) =>
+export const date = (value, options = {}) =>
   new DateTime(value, Object.assign(options, { dateStyle: "short", timeStyle: undefined }));
 
 /**
  * Creates a new date and time object with default time format.
  *
  * @param {DateTimeValue} [value] - The date and time value.
- * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @param {DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {DateTime} A new date and time object.
  */
-export const time = (value, options) =>
+export const time = (value, options = {}) =>
   new DateTime(value, Object.assign(options, { dateStyle: undefined, timeStyle: "short" }));
 
 /**
  * Transforms a date value or string value into a formatted string.
  *
  * @param {DateTimeValue} [value] - The date value.
- * @param {Intl.DateTimeFormatOptions} [options] - The options for the date .
+ * @param {DateTimeFormatOptions} [options] - The options for the date .
  * @returns {String} The formatted date.
  */
-export const formatDate = (value, options = { dateStyle: "short", timeStyle: null }) => {
+export const formatDate = (value, options = { dateStyle: "short", timeStyle: undefined }) => {
   if (value instanceof DateTime) return value.format(options);
   return new DateTime(value, options).format(options);
 };
@@ -377,10 +492,10 @@ export const formatDate = (value, options = { dateStyle: "short", timeStyle: nul
  * Transforms a time value or string value into a formatted string.
  *
  * @param {DateTimeValue} [value] - The time value.
- * @param {Intl.DateTimeFormatOptions} [options] - The options for the time.
+ * @param {DateTimeFormatOptions} [options] - The options for the time.
  * @returns {String} The formatted time.
  */
-export const formatTime = (value, options = { dateStyle: null, timeStyle: "short" }) => {
+export const formatTime = (value, options = { dateStyle: undefined, timeStyle: "short" }) => {
   if (value instanceof DateTime) return value.format(options);
   return new DateTime(value, options).format(options);
 };
@@ -389,7 +504,7 @@ export const formatTime = (value, options = { dateStyle: null, timeStyle: "short
  * Transforms a date and time value or string value into a formatted string.
  *
  * @param {DateTimeValue} [value] - The date and time value.
- * @param {Intl.DateTimeFormatOptions} [options] - The options for the date and time.
+ * @param {DateTimeFormatOptions} [options] - The options for the date and time.
  * @returns {String} The formatted date and time.
  */
 export const formatDateTime = (value, options = { dateStyle: "short", timeStyle: "short" }) => {
