@@ -335,6 +335,52 @@ export class DateTime {
   }
 
   /**
+   * Adds the specified value in the specified unit to the date and time (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to add the value in.
+   * @param {number} value The value to add.
+   * @returns {DateTime} The updated date and time object.
+   */
+  add(unit, value = 1) {
+    switch (unit) {
+      case "year":
+        this.#instance.setFullYear(this.year + value);
+        break;
+      case "month":
+        this.#instance.setMonth(this.month + value);
+        break;
+      case "week":
+        this.#instance.setDate(this.day + value * 7);
+        break;
+      case "day":
+        this.#instance.setDate(this.day + value);
+        break;
+      case "hour":
+        this.#instance.setHours(this.hours + value);
+        break;
+      case "minute":
+        this.#instance.setMinutes(this.minutes + value);
+        break;
+      case "second":
+        this.#instance.setSeconds(this.seconds + value);
+        break;
+      case "millisecond":
+        this.#instance.setMilliseconds(this.milliseconds + value);
+        break;
+    }
+    return this;
+  }
+
+  /**
+   * Subtracts the specified value in the specified unit from the date and time (e.g., year, month, day, hour, minute, second).
+   * @param {number} value The value to subtract.
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to subtract the value in.
+   * @returns {DateTime} The updated date and time object.
+   */
+  subtract(unit, value = 1) {
+    return this.add(unit, -value);
+  }
+
+  /**
    * Sets the date and time to the start of the specified unit (e.g., year, month, day, hour, minute, second).
    * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the start of.
    * @returns {DateTime} The updated date and time object.

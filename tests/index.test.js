@@ -57,6 +57,18 @@ suite("DateTime", () => {
     expect(new DateTime().relative()).toEqual("just now");
   });
 
+  test("add()", () => {
+    const a = new DateTime(DEFAULT_DATE);
+    const b = a.clone().add("day", DEFAULT_DIFF);
+    expect(b.diff(a, "day")).toEqual(DEFAULT_DIFF);
+  });
+
+  test("subtract()", () => {
+    const a = new DateTime();
+    const b = a.clone().subtract("day", DEFAULT_DIFF);
+    expect(a.diff(b, "day")).toEqual(DEFAULT_DIFF);
+  });
+
   test("startOf()", () => {
     const dt = new DateTime();
     expect(dt.clone().startOf("year").month).toEqual(0);
