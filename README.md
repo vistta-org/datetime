@@ -236,6 +236,52 @@ class DateTime {
    * @returns {string} The relative time from the reference date.
    */
   relative(options);
+
+  /**
+   * Adds the specified value in the specified unit to the date and time (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to add the value in.
+   * @param {number} value The value to add.
+   * @returns {DateTime} The updated date and time object.
+   */
+  add(unit, value = 1);
+
+  /**
+   * Subtracts the specified value in the specified unit from the date and time (e.g., year, month, day, hour, minute, second).
+   * @param {number} value The value to subtract.
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to subtract the value in.
+   * @returns {DateTime} The updated date and time object.
+   */
+  subtract(unit, value = 1);
+
+  /**
+   * Sets the date and time to the start of the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the start of.
+   * @returns {DateTime} The updated date and time object.
+   */
+  startOf(unit);
+
+  /**
+   * Sets the date and time to the end of the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the end of.
+   * @returns {DateTime} The updated date and time object.
+   */
+  endOf(unit);
+
+  /**
+   * Moves the date and time forward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {number} step The number of units to move the date and time by (positive or negative).
+   * @returns {DateTime} The updated date and time object.
+   */
+  next(unit, step = 1);
+
+  /**
+   * Moves the date and time backward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
+   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {number} step The number of units to move the date and time by (positive or negative).
+   * @returns {DateTime} The updated date and time object.
+   */
+  previous(unit, step = 1);
 }
 ```
 
