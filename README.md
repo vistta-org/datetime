@@ -182,11 +182,18 @@ class DateTime {
   get time();
 
   /**
-   * Gets the ISO 8601 formatted date and time.
+   * Gets the ISO 8601 formatted date and time in UTC.
    *
    * @returns {string} The ISO 8601 formatted date and time.
    */
   toISOString();
+
+  /**
+   * Gets the ISO 8601 formatted date and time in local time.
+   *
+   * @returns {string} The local ISO 8601 formatted date and time.
+   */
+  toLocalISOString();
 
   /**
    * Formats the date according to the default or the specified locales.

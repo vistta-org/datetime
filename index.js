@@ -231,6 +231,22 @@ export class DateTime {
   }
 
   /**
+   * Gets the ISO 8601 formatted date and time in local time.
+   *
+   * @returns {string} The local ISO 8601 formatted date and time.
+   */
+  toLocalISOString() {
+    const y = String(this.year).padStart(4, "0");
+    const m = String(this.month + 1).padStart(2, "0");
+    const d = String(this.day).padStart(2, "0");
+    const h = String(this.hours).padStart(2, "0");
+    const min = String(this.minutes).padStart(2, "0");
+    const s = String(this.seconds).padStart(2, "0");
+    const ms = String(this.milliseconds).padStart(3, "0");
+    return `${y}-${m}-${d}T${h}:${min}:${s}.${ms}`;
+  }
+
+  /**
    * Formats the date according to the default or the specified locales.
    *
    * @returns {string} The formatted date and time.
