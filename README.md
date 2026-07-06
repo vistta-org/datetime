@@ -215,9 +215,21 @@ class DateTime {
    * Checks whether the date and time is equal to the target date and time.
    *
    * @param {DateTime} target - Comparison target.
+   * @param {Object} [options] - The comparison options.
+   * @param {DateTimeUnit} [options.precision] - The finest unit to compare.
+   * @param {DateTimeUnit[]} [options.exclude] - The units to exclude from the comparison.
    * @returns {boolean} Whether the date and time is equal to the target date and time.
    */
-  equals(target);
+  equals(target, options);
+
+  /**
+   * Checks whether the date and time is equal to the current time, comparing
+   * all fields down to the specified precision (inclusive). Finer fields are ignored.
+   *
+   * @param {DateTimeUnit} [precision] - The finest unit to compare.
+   * @returns {boolean} Whether the date and time matches the current time.
+   */
+  isNow(precision);
 
   /**
    * Creates a deep copy of the current DateTime object.
@@ -246,7 +258,7 @@ class DateTime {
 
   /**
    * Adds the specified value in the specified unit to the date and time (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to add the value in.
+   * @param {DateTimeUnit} unit The unit to add the value in.
    * @param {number} value The value to add.
    * @returns {DateTime} The updated date and time object.
    */
@@ -255,28 +267,28 @@ class DateTime {
   /**
    * Subtracts the specified value in the specified unit from the date and time (e.g., year, month, day, hour, minute, second).
    * @param {number} value The value to subtract.
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to subtract the value in.
+   * @param {DateTimeUnit} unit The unit to subtract the value in.
    * @returns {DateTime} The updated date and time object.
    */
   subtract(unit, value = 1);
 
   /**
    * Sets the date and time to the start of the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the start of.
+   * @param {DateTimeUnit} unit The unit to set the date and time to the start of.
    * @returns {DateTime} The updated date and time object.
    */
   startOf(unit);
 
   /**
    * Sets the date and time to the end of the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the end of.
+   * @param {DateTimeUnit} unit The unit to set the date and time to the end of.
    * @returns {DateTime} The updated date and time object.
    */
   endOf(unit);
 
   /**
    * Moves the date and time forward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {DateTimeUnit} unit The unit to move the date and time by.
    * @param {number} step The number of units to move the date and time by (positive or negative).
    * @returns {DateTime} The updated date and time object.
    */
@@ -284,7 +296,7 @@ class DateTime {
 
   /**
    * Moves the date and time backward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {DateTimeUnit} unit The unit to move the date and time by.
    * @param {number} step The number of units to move the date and time by (positive or negative).
    * @returns {DateTime} The updated date and time object.
    */

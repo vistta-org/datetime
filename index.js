@@ -10,6 +10,10 @@
  * @typedef {number|number[]|string|Date|DateTime} DateTimeValue
  */
 
+/**
+ * @typedef {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} DateTimeUnit
+ */
+
 const WEEK_IN_MILLIS = 6.048e8;
 const DAY_IN_MILLIS = 8.64e7;
 const HOUR_IN_MILLIS = 3.6e6;
@@ -271,27 +275,51 @@ export class DateTime {
    *
    * @param {DateTime} target - Comparison target.
    * @param {Object} [options] - The comparison options.
-   * @param {boolean} [options.year] - Whether to compare the year.
-   * @param {boolean} [options.month] - Whether to compare the month.
-   * @param {boolean} [options.day] - Whether to compare the day.
-   * @param {boolean} [options.hours] - Whether to compare the hour.
-   * @param {boolean} [options.minutes] - Whether to compare the minute.
-   * @param {boolean} [options.seconds] - Whether to compare the second.
+   * @param {DateTimeUnit} [options.precision] - The finest unit to compare.
+   * @param {DateTimeUnit[]} [options.exclude] - The units to exclude from the comparison.
    * @returns {boolean} Whether the date and time is equal to the target date and time.
    */
   equals(target, options) {
     if (!(target instanceof DateTime)) return false;
-    const { year, month, day, hours, minutes, seconds } = options || {};
-    if (year || month || day || hours || minutes || seconds)
+    const { precision, exclude } = options || {};
+    if (precision || exclude) {
+      const fields = { year: true, month: true, day: true, hour: true, minute: true, second: true };
+      if (exclude) {
+        for (const unit of exclude) {
+          delete fields[unit];
+        }
+      }
+      if (precision) {
+        const order = ["second", "minute", "hour", "day", "month", "year"];
+        const idx = order.indexOf(precision);
+        if (idx !== -1) {
+          for (let i = 0; i < idx; i++) {
+            delete fields[order[i]];
+          }
+        }
+      }
       return (
-        (!year || this.year === target.year) &&
-        (!month || this.month === target.month) &&
-        (!day || this.day === target.day) &&
-        (!hours || this.hours === target.hours) &&
-        (!minutes || this.minutes === target.minutes) &&
-        (!seconds || this.seconds === target.seconds)
+        (!fields.year || this.year === target.year) &&
+        (!fields.month || this.month === target.month) &&
+        (!fields.day || this.day === target.day) &&
+        (!fields.hour || this.hours === target.hours) &&
+        (!fields.minute || this.minutes === target.minutes) &&
+        (!fields.second || this.seconds === target.seconds)
       );
+    }
     return this.#instance.getTime() === new Date(target.date).getTime();
+  }
+
+  /**
+   * Checks whether the date and time is equal to the current time, comparing
+   * all fields down to the specified precision (inclusive). Fields finer than
+   * the precision are ignored.
+   *
+   * @param {DateTimeUnit} [precision] - The finest unit to compare.
+   * @returns {boolean} Whether the date and time matches the current time.
+   */
+  isNow(precision) {
+    return this.equals(new DateTime(), { precision });
   }
 
   /**
@@ -352,7 +380,7 @@ export class DateTime {
 
   /**
    * Adds the specified value in the specified unit to the date and time (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to add the value in.
+   * @param {DateTimeUnit} unit The unit to add the value in.
    * @param {number} value The value to add.
    * @returns {DateTime} The updated date and time object.
    */
@@ -389,7 +417,7 @@ export class DateTime {
   /**
    * Subtracts the specified value in the specified unit from the date and time (e.g., year, month, day, hour, minute, second).
    * @param {number} value The value to subtract.
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"|"millisecond"} unit The unit to subtract the value in.
+   * @param {DateTimeUnit} unit The unit to subtract the value in.
    * @returns {DateTime} The updated date and time object.
    */
   subtract(unit, value = 1) {
@@ -398,7 +426,7 @@ export class DateTime {
 
   /**
    * Sets the date and time to the start of the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the start of.
+   * @param {DateTimeUnit} unit The unit to set the date and time to the start of.
    * @returns {DateTime} The updated date and time object.
    */
   startOf(unit) {
@@ -419,6 +447,7 @@ export class DateTime {
         this.#instance.setSeconds(0);
       // falls through
       case "second":
+      case "millisecond":
         this.#instance.setMilliseconds(0);
         break;
       case "week":
@@ -436,7 +465,7 @@ export class DateTime {
 
   /**
    * Sets the date and time to the end of the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to set the date and time to the end of.
+   * @param {DateTimeUnit} unit The unit to set the date and time to the end of.
    * @returns {DateTime} The updated date and time object.
    */
   endOf(unit) {
@@ -457,6 +486,7 @@ export class DateTime {
         this.#instance.setSeconds(59);
       // falls through
       case "second":
+      case "millisecond":
         this.#instance.setMilliseconds(999);
         break;
       case "week":
@@ -475,7 +505,7 @@ export class DateTime {
 
   /**
    * Moves the date and time forward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {DateTimeUnit} unit The unit to move the date and time by.
    * @param {number} step The number of units to move the date and time by (positive or negative).
    * @returns {DateTime} The updated date and time object.
    */
@@ -502,13 +532,16 @@ export class DateTime {
       case "second":
         this.#instance.setSeconds(this.seconds + step);
         break;
+      case "millisecond":
+        this.#instance.setMilliseconds(this.milliseconds + step);
+        break;
     }
     return this;
   }
 
   /**
    * Moves the date and time backward by the specified step in the specified unit (e.g., year, month, day, hour, minute, second).
-   * @param {"year"|"month"|"week"|"day"|"hour"|"minute"|"second"} unit The unit to move the date and time by.
+   * @param {DateTimeUnit} unit The unit to move the date and time by.
    * @param {number} step The number of units to move the date and time by (positive or negative).
    * @returns {DateTime} The updated date and time object.
    */

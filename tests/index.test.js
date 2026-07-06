@@ -28,6 +28,53 @@ suite("DateTime", () => {
     expect(new DateTime(DEFAULT_DATE).equals(new DateTime(DEFAULT_DATE))).toEqual(true);
   });
 
+  test("equals() with precision", () => {
+    const a = new DateTime("2023-05-17T14:23:45.678Z");
+    const b = new DateTime("2023-05-17T14:23:50.123Z");
+    // Same down to the minute, different seconds
+    expect(a.equals(b, { precision: "minute" })).toEqual(true);
+    // Same down to the second
+    expect(a.equals(b, { precision: "second" })).toEqual(false);
+    // Same date, different time
+    const c = new DateTime("2023-05-17T18:00:00.000Z");
+    expect(a.equals(c, { precision: "day" })).toEqual(true);
+    expect(a.equals(c, { precision: "hour" })).toEqual(false);
+  });
+
+  test("equals() with exclude", () => {
+    const a = new DateTime("2023-05-17T14:23:45.678Z");
+    const b = new DateTime("2023-05-17T14:23:50.123Z");
+    // Exclude seconds — should be equal
+    expect(a.equals(b, { exclude: ["second"] })).toEqual(true);
+    // Exclude seconds and minutes — should be equal
+    expect(a.equals(b, { exclude: ["second", "minute"] })).toEqual(true);
+    // Exclude hours — different hours would still differ
+    const c = new DateTime("2023-05-17T18:23:45.678Z");
+    expect(a.equals(c, { exclude: ["hour"] })).toEqual(true);
+    expect(a.equals(c, { exclude: ["second"] })).toEqual(false);
+  });
+
+  test("isNow()", () => {
+    const now = new DateTime();
+    expect(now.isNow()).toEqual(true);
+    // A date far in the past is not now
+    expect(new DateTime(DEFAULT_DATE).isNow()).toEqual(false);
+  });
+
+  test("isNow() with precision", () => {
+    const now = new DateTime();
+    // Same minute, different seconds
+    const sameMinute = new DateTime(now.time);
+    sameMinute.seconds = now.seconds === 30 ? 31 : 30;
+    expect(sameMinute.isNow("minute")).toEqual(true);
+    expect(sameMinute.isNow("second")).toEqual(false);
+    // Same day, different hours
+    const sameDay = new DateTime(now.time);
+    sameDay.hours = now.hours === 10 ? 11 : 10;
+    expect(sameDay.isNow("day")).toEqual(true);
+    expect(sameDay.isNow("hour")).toEqual(false);
+  });
+
   test("clone()", () => {
     const a = new DateTime(DEFAULT_DATE);
     const b = a.clone();
