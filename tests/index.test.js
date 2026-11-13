@@ -98,13 +98,15 @@ suite("DateTime", () => {
 
   test("relative() selects units at exact thresholds", () => {
     const formatter = new Intl.RelativeTimeFormat("en");
-    for (const [unit, milliseconds] of [
+    /** @type {[Intl.RelativeTimeFormatUnit, number][]} */
+    const thresholds = [
       ["second", 1000],
       ["minute", 60000],
       ["hour", 3600000],
       ["day", 86400000],
       ["week", 604800000],
-    ]) {
+    ];
+    for (const [unit, milliseconds] of thresholds) {
       for (const direction of [-1, 1]) {
         expect(new DateTime(direction * milliseconds).relative({ from: new Date(0), locales: "en" })).toEqual(
           formatter.format(direction, unit),
@@ -164,6 +166,7 @@ suite("DateTime", () => {
   });
 
   test("week boundaries respect every configured first day", () => {
+    /** @type {import("../index.js").DateTimeFormatOptions["firstDayOfWeek"][]} */
     const weekdays = ["sun", "mon", "tue", "wen", "thu", "fri", "sat"];
     for (const [firstDay, firstDayOfWeek] of weekdays.entries()) {
       for (let weekday = 0; weekday < 7; weekday++) {
@@ -328,7 +331,9 @@ suite("DateTime", () => {
     expect(() => new DateTime(0).relative({ from: new Date(NaN) })).toThrow("Invalid reference date");
     expect(() => DateTime.min(invalid, new DateTime(0))).toThrow("Invalid date and time");
     expect(() => new DateTime(0).add("day", Infinity)).toThrow("finite value");
+    // @ts-expect-error Exercise runtime rejection of an unsupported unit.
     expect(() => new DateTime(0).diff(new DateTime(0), "invalid")).toThrow("Invalid date and time unit");
+    // @ts-expect-error Exercise runtime rejection of an unsupported weekday.
     expect(() => new DateTime(0, { firstDayOfWeek: "invalid" }).startOf("week")).toThrow("Invalid first day of week");
   });
 });
