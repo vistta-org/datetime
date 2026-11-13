@@ -3,9 +3,13 @@
   "version": "1.1.0",
   "description": "Vistta DateTime Library",
   "main": "index.js",
+  "types": "index.d.ts",
   "type": "module",
   "exports": {
-    ".": "./index.js",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
     "./global": {
       "types": "./global.d.ts",
       "default": "./global.js"
@@ -16,7 +20,8 @@
     "url": "https://github.com/vistta-org/datetime.git"
   },
   "scripts": {
-    "postinstall": ""
+    "postinstall": "",
+    "test": "vistta test \"tests/*.test.js\" --environment=node"
   },
   "author": "Tiago Terenas Almeida",
   "license": "GPL-3.0-only"

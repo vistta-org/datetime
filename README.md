@@ -41,6 +41,45 @@ const relativeTime = date1.relative({ from: new Date() });
 const formattedDate = date1.toString("en-US");
 ```
 
+## **Behavior**
+
+- Numbers are Unix timestamps in **milliseconds**. Array inputs follow native `Date` arguments, including zero-based months.
+- `add`, `subtract`, `next`, `previous`, `startOf`, and `endOf` mutate the instance and return it. Use `clone()` to retain the original.
+- Month/year arithmetic clamps to the last valid day: January 31 + one month becomes February 28/29; February 29 + one year becomes February 28. Adding a month again uses the clamped day, not the original day. Direct property setters retain native `Date` overflow behavior.
+- Day/week additions use local calendar arithmetic. A calendar day can span 23 or 25 hours across daylight-saving changes. Hour/minute/second additions also use native local setters; add milliseconds for an exact elapsed duration.
+- `diff()` measures elapsed time for weeks through milliseconds. Year/month differences compare calendar fields, not complete elapsed years/months. Singular and plural units are supported. Omitting the unit returns milliseconds; `float: false` (the default) floors the result, including negative values.
+- `relative()` measures elapsed time without timezone-offset adjustments. It selects units at exact thresholds and uses weeks for longer intervals. Subsecond differences are localized using `numeric: "auto"` unless explicitly overridden.
+- `firstDayOfWeek` defaults to `"sun"`. Use `"wed"` for Wednesday; the legacy `"wen"` spelling remains supported.
+- `equals()` and `isNow()` default to exact timestamp equality. `precision` compares calendar fields through that unit, including milliseconds. `precision: "week"` compares local week boundaries using the receiver's week-start option and cannot be combined with `exclude`. With `exclude` alone, comparison retains the historical second-level precision.
+- Formatting `timeZone` affects display only, not getters, calendar arithmetic, or week boundaries.
+- Invalid inputs remain inspectable with `isValid()`. Invalid dates throw `RangeError` during formatting, arithmetic, boundaries, relative calculations, differences, and min/max comparisons. Equality with an invalid date returns `false`. Unsupported operation units and invalid week-start options throw `RangeError`.
+
+### **Formatting options**
+
+`format()` inherits instance options; per-call options override them without mutating either options object. `toString(locales)` uses the same defaults.
+
+```javascript
+const value = new DateTime([2024, 0, 31, 12], { locales: "pt-PT", dateStyle: "long" });
+value.format(); // Uses the stored locale and date style.
+value.format({ locales: "en-GB" }); // Overrides only the locale.
+value.format({ hour: "2-digit", minute: "2-digit" }); // Formats time fields instead of the inherited date style.
+value.clone().add("month"); // February 29, without changing value.
+```
+
+Individual formatting fields clear inherited `dateStyle`/`timeStyle`; explicit styles clear inherited individual fields. Explicitly incompatible options still produce native `Intl` errors. Use `undefined` to clear an inherited option.
+
+The `date`, `time`, and formatting helpers merge short-style defaults with caller options. Custom styles and individual fields override those defaults; caller options are never mutated.
+
+### **Compatibility notes**
+
+This update fixes reversed `min`/`max`, month-difference signs, configurable week boundaries, and relative-time thresholds. It intentionally changes month/year overflow to clamping, makes `format()` inherit stored options, localizes the former hardcoded `"just now"` (English now renders `"now"`), and makes millisecond boundaries no-ops. Invalid arithmetic/differences and unknown units now throw instead of returning `NaN` or silently doing nothing.
+
+### **TypeScript and tests**
+
+Main and global imports include declarations; no `allowJs` configuration is required. Public option/unit types are exported from `@vistta/datetime`.
+
+From this package in the workspace, run `npm test`. Tests cover exact thresholds, all week starts, leap years, month ends, a fixed clock, Lisbon DST transitions, and strict TypeScript consumers.
+
 You can also make DateTime available globally by using
 
 ```javascript
@@ -166,6 +205,17 @@ class DateTime {
    */
   set minutes(value);
 
+  get seconds();
+  set seconds(value);
+  get milliseconds();
+  set milliseconds(value);
+  get weekday();
+
+  /**
+   * Whether the underlying date is valid.
+   */
+  isValid();
+
   /**
    * @returns {Date} A Date object representing the current date and time.
    */
@@ -206,7 +256,7 @@ class DateTime {
   /**
    * Formats the date according to the default or the specified options.
    *
-   * @param {LocaleOptions & Intl.DateTimeFormatOptions} [options] - The Intl.DateTimeFormat options object.
+   * @param {DateTimeFormatOptions} [options] - Overrides for stored formatting options.
    * @returns {string} The formatted date and time.
    */
   format(options);
@@ -217,7 +267,7 @@ class DateTime {
    * @param {DateTime} target - Comparison target.
    * @param {Object} [options] - The comparison options.
    * @param {DateTimeUnit} [options.precision] - The finest unit to compare.
-   * @param {DateTimeUnit[]} [options.exclude] - The units to exclude from the comparison.
+   * @param {DateTimeField[]} [options.exclude] - The fields to exclude from the comparison.
    * @returns {boolean} Whether the date and time is equal to the target date and time.
    */
   equals(target, options);
@@ -232,7 +282,7 @@ class DateTime {
   isNow(precision);
 
   /**
-   * Creates a deep copy of the current DateTime object.
+   * Creates an independent date with a shallow copy of its options.
    *
    * @returns {DateTime} A new date and time object that is a clone of the current object.
    */
@@ -242,7 +292,7 @@ class DateTime {
    * Calculates the difference between two date and times (e.g., years, months, days, hours, minutes, seconds).
    *
    * @param {DateTime} target - The target date and time.
-   * @param {string} output - The output format.
+   * @param {DateTimeUnit | `${DateTimeUnit}s`} [output] - The output unit; defaults to milliseconds.
    * @param {boolean} [float] - Whether to use floating-point numbers.
    * @returns {number | null} The difference between the two date and times.
    */
@@ -251,7 +301,7 @@ class DateTime {
   /**
    * Gets the relative time from the reference date (e.g., "just now", "in an hour", etc.).
    *
-   * @param {RelativeOptions & Intl.RelativeTimeFormatOptions} options - The options for relative time calculations.
+   * @param {RelativeOptions} [options] - Intl relative options plus locales and a reference Date.
    * @returns {string} The relative time from the reference date.
    */
   relative(options);

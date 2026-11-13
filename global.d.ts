@@ -1,3 +1,6 @@
+import { DateTime as DateTimeClass } from "./index.js";
+
 declare global {
-  const DateTime: typeof DateTime;
+  var DateTime: typeof DateTimeClass;
+  type DateTime = DateTimeClass;
 }

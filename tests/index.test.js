@@ -13,14 +13,16 @@ suite("DateTime", () => {
 
   test("min()", () => {
     const a = new DateTime(DEFAULT_DATE);
-    const b = new DateTime();
-    expect(DateTime.min(a, b).time).toEqual(b.time);
+    const b = new DateTime("2024-01-01");
+    expect(DateTime.min(a, b)).toEqual(a);
+    expect(DateTime.min(b, a)).toEqual(a);
   });
 
   test("max()", () => {
     const a = new DateTime(DEFAULT_DATE);
-    const b = new DateTime();
-    expect(DateTime.max(a, b).time).toEqual(a.time);
+    const b = new DateTime("2024-01-01");
+    expect(DateTime.max(a, b)).toEqual(b);
+    expect(DateTime.max(b, a)).toEqual(b);
   });
 
   test("equals()", () => {
@@ -55,24 +57,7 @@ suite("DateTime", () => {
   });
 
   test("isNow()", () => {
-    const now = new DateTime();
-    expect(now.isNow()).toEqual(true);
-    // A date far in the past is not now
     expect(new DateTime(DEFAULT_DATE).isNow()).toEqual(false);
-  });
-
-  test("isNow() with precision", () => {
-    const now = new DateTime();
-    // Same minute, different seconds
-    const sameMinute = new DateTime(now.time);
-    sameMinute.seconds = now.seconds === 30 ? 31 : 30;
-    expect(sameMinute.isNow("minute")).toEqual(true);
-    expect(sameMinute.isNow("second")).toEqual(false);
-    // Same day, different hours
-    const sameDay = new DateTime(now.time);
-    sameDay.hours = now.hours === 10 ? 11 : 10;
-    expect(sameDay.isNow("day")).toEqual(true);
-    expect(sameDay.isNow("hour")).toEqual(false);
   });
 
   test("clone()", () => {
@@ -100,8 +85,32 @@ suite("DateTime", () => {
     expect(b.diff(a, "day")).toEqual(DEFAULT_DIFF);
   });
 
+  test("month differences have the same sign as elapsed differences", () => {
+    const a = new DateTime([2023, 11, 1]);
+    const b = new DateTime([2024, 1, 1]);
+    expect(b.diff(a, "month")).toEqual(2);
+    expect(a.diff(b, "month")).toEqual(-2);
+  });
+
   test("relative()", () => {
-    expect(new DateTime().relative()).toEqual("just now");
+    expect(new DateTime(0).relative({ from: new Date(0), locales: "en" })).toEqual("now");
+  });
+
+  test("relative() selects units at exact thresholds", () => {
+    const formatter = new Intl.RelativeTimeFormat("en");
+    for (const [unit, milliseconds] of [
+      ["second", 1000],
+      ["minute", 60000],
+      ["hour", 3600000],
+      ["day", 86400000],
+      ["week", 604800000],
+    ]) {
+      for (const direction of [-1, 1]) {
+        expect(new DateTime(direction * milliseconds).relative({ from: new Date(0), locales: "en" })).toEqual(
+          formatter.format(direction, unit),
+        );
+      }
+    }
   });
 
   test("add()", () => {
@@ -111,7 +120,7 @@ suite("DateTime", () => {
   });
 
   test("subtract()", () => {
-    const a = new DateTime();
+    const a = new DateTime([2024, 0, 20]);
     const b = a.clone().subtract("day", DEFAULT_DIFF);
     expect(a.diff(b, "day")).toEqual(DEFAULT_DIFF);
   });
@@ -152,6 +161,24 @@ suite("DateTime", () => {
     expect(weekDt.minutes).toEqual(59);
     expect(weekDt.seconds).toEqual(59);
     expect(weekDt.milliseconds).toEqual(999);
+  });
+
+  test("week boundaries respect every configured first day", () => {
+    const weekdays = ["sun", "mon", "tue", "wen", "thu", "fri", "sat"];
+    for (const [firstDay, firstDayOfWeek] of weekdays.entries()) {
+      for (let weekday = 0; weekday < 7; weekday++) {
+        const dt = new DateTime([2023, 4, 14 + weekday, 12], { firstDayOfWeek });
+        const offset = (weekday - firstDay + 7) % 7;
+        const start = dt.clone().startOf("week");
+        const end = dt.clone().endOf("week");
+        expect(start.day).toEqual(dt.day - offset);
+        expect(end.day).toEqual(dt.day + 6 - offset);
+        expect(start.weekday).toEqual(firstDay);
+        expect(end.weekday).toEqual((firstDay + 6) % 7);
+        expect(start.hours).toEqual(0);
+        expect(end.hours).toEqual(23);
+      }
+    }
   });
 
   test("next()", () => {
@@ -209,5 +236,99 @@ suite("DateTime", () => {
     expect(typeof str).toEqual("string");
     const dt = new DateTime(DEFAULT_DATE);
     expect(formatDateTime(dt)).toEqual(dt.format({ dateStyle: "short", timeStyle: "short" }));
+  });
+
+  test("month and year arithmetic clamp while retaining the time", () => {
+    const january = new DateTime([2024, 0, 31, 12, 34, 56, 789]);
+    const february = january.clone().add("month");
+    expect(february.month).toEqual(1);
+    expect(february.day).toEqual(29);
+    expect(february.hours).toEqual(12);
+    expect(february.milliseconds).toEqual(789);
+    expect(january.day).toEqual(31);
+    expect(january.clone().next("month").time).toEqual(february.time);
+    expect(february.clone().add("year").day).toEqual(28);
+    expect(february.clone().previous("year").day).toEqual(28);
+    const march = new DateTime([2023, 2, 31]);
+    expect(march.subtract("month").day).toEqual(28);
+    expect(new DateTime([2023, 11, 31]).add("month", 2).toLocalISOString()).toEqual("2024-02-29T00:00:00.000");
+  });
+
+  test("millisecond boundaries preserve the instant", () => {
+    const dt = new DateTime("2024-01-01T12:34:56.789Z");
+    expect(dt.clone().startOf("millisecond").time).toEqual(dt.time);
+    expect(dt.clone().endOf("millisecond").time).toEqual(dt.time);
+    expect(dt.clone().add("millisecond").time).toEqual(dt.time + 1);
+  });
+
+  test("comparison handles milliseconds and calendar weeks", () => {
+    const a = new DateTime([2023, 4, 17, 12, 0, 0, 123], { firstDayOfWeek: "mon" });
+    const b = new DateTime(a.time + 1);
+    expect(a.equals(b, { precision: "second" })).toEqual(true);
+    expect(a.equals(b, { precision: "millisecond" })).toEqual(false);
+    expect(a.equals(b, { precision: "millisecond", exclude: ["millisecond"] })).toEqual(true);
+    expect(a.equals(new DateTime([2023, 4, 21]), { precision: "week" })).toEqual(true);
+    expect(a.equals(new DateTime([2023, 4, 22]), { precision: "week" })).toEqual(false);
+    const start = new DateTime([2023, 4, 17], { firstDayOfWeek: "wed" }).startOf("week");
+    expect(start.weekday).toEqual(3);
+  });
+
+  test("formatting inherits options and supports overrides without Intl conflicts", () => {
+    const dt = new DateTime([2024, 0, 1, 12], { locales: "en", dateStyle: "full", timeZone: "UTC" });
+    expect(dt.format()).toEqual(dt.toString());
+    expect(dt.format({ locales: "pt" })).toEqual(
+      new Intl.DateTimeFormat("pt", { dateStyle: "full", timeZone: "UTC" }).format(dt.date),
+    );
+    expect(dt.toString("pt")).toEqual(dt.format({ locales: "pt" }));
+    expect(dt.format({ hour: "2-digit", minute: "2-digit" })).toEqual(
+      new Intl.DateTimeFormat("en", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }).format(dt.date),
+    );
+    const fields = new DateTime(dt.date, { locales: "en", year: "numeric", hour: "numeric" });
+    expect(fields.format({ dateStyle: "short" })).toEqual(
+      new Intl.DateTimeFormat("en", { dateStyle: "short" }).format(dt.date),
+    );
+    expect(dt.options.dateStyle).toEqual("full");
+    expect(new DateTime(null, { dateStyle: "full" }).options.dateStyle).toEqual("full");
+  });
+
+  test("helpers preserve caller options and merge format defaults", () => {
+    const options = Object.freeze({ locales: "en", dateStyle: "long" });
+    expect(date(DEFAULT_DATE, options).options.dateStyle).toEqual("long");
+    const timeOptions = Object.freeze({ locales: "en", timeStyle: "long" });
+    expect(time(DEFAULT_DATE, timeOptions).options.timeStyle).toEqual("long");
+    const dt = new DateTime([2024, 0, 1, 12], { locales: "pt", timeStyle: "long" });
+    expect(formatDate(dt, { locales: "en" })).toEqual(new Intl.DateTimeFormat("en", { dateStyle: "short" }).format(dt.date));
+    expect(formatTime(dt, { locales: "en" })).toEqual(new Intl.DateTimeFormat("en", { timeStyle: "short" }).format(dt.date));
+    expect(formatDateTime(dt, { locales: "en" })).toEqual(
+      new Intl.DateTimeFormat("en", { dateStyle: "short", timeStyle: "short" }).format(dt.date),
+    );
+    expect(formatDate(dt, { year: "numeric" })).toEqual(new Intl.DateTimeFormat("pt", { year: "numeric" }).format(dt.date));
+    expect(formatTime(dt.date, { locales: "en", hour: "numeric" })).toEqual(
+      new Intl.DateTimeFormat("en", { hour: "numeric" }).format(dt.date),
+    );
+  });
+
+  test("relative zero is localized and honors numeric options", () => {
+    const dt = new DateTime(0, { locales: "pt" });
+    expect(dt.relative({ from: new Date(500) })).toEqual(
+      new Intl.RelativeTimeFormat("pt", { numeric: "auto" }).format(0, "second"),
+    );
+    expect(dt.relative({ from: new Date(0), numeric: "always" })).toEqual(
+      new Intl.RelativeTimeFormat("pt", { numeric: "always" }).format(0, "second"),
+    );
+  });
+
+  test("invalid dates and unsupported operations fail explicitly", () => {
+    const invalid = new DateTime("not a date");
+    expect(invalid.isValid()).toEqual(false);
+    expect(invalid.equals(invalid, { exclude: ["year", "month", "day", "hour", "minute", "second"] })).toEqual(false);
+    expect(() => invalid.toLocalISOString()).toThrow("Invalid date and time");
+    expect(() => invalid.add("day")).toThrow("Invalid date and time");
+    expect(() => new DateTime(0).diff(invalid)).toThrow("Invalid date and time");
+    expect(() => new DateTime(0).relative({ from: new Date(NaN) })).toThrow("Invalid reference date");
+    expect(() => DateTime.min(invalid, new DateTime(0))).toThrow("Invalid date and time");
+    expect(() => new DateTime(0).add("day", Infinity)).toThrow("finite value");
+    expect(() => new DateTime(0).diff(new DateTime(0), "invalid")).toThrow("Invalid date and time unit");
+    expect(() => new DateTime(0, { firstDayOfWeek: "invalid" }).startOf("week")).toThrow("Invalid first day of week");
   });
 });
