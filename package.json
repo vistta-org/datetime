@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.vistta.org/datetime.git"
+    "url": "https://git.vistta.org/vistta/datetime.git"
   },
   "scripts": {
     "postinstall": "",
